@@ -99,8 +99,8 @@ Never push directly to `main` or `dev`. Open a Pull Request.
 
 ## Team
 
-- Eyob — Auth, QR flow, waiter portal, reports, balance expiry
-- [Teammate] — Schema setup, employee portal, café manager portal, company manager portal, notifications
+- Eyob — Auth, QR flow, waiter portal, reports, employee portal, balance expiry
+- Selam — Schema setup, balance expiry, café manager portal, company manager portal, notifications
 
 ## Status
 
