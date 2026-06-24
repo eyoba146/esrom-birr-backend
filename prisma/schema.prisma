@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Department {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  createdAt  DateTime   @default(now())
+  employees  Employee[]
+}
+
+model Employee {
+  id           Int        @id @default(autoincrement())
+  employeeId   String     @unique
+  name         String
+  password     String
+  qrToken      String     @unique
+  balance      Float      @default(0)
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+
+  orders        Order[]
+  notifications Notification[]
+  comments      Comment[]
+}
+
+model Cafe {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  location  String
+  createdAt DateTime   @default(now())
+
+  menuItems  MenuItem[]
+  orders     Order[]
+  waiters    Waiter[]
+}
+
+model Waiter {
+  id         Int      @id @default(autoincrement())
+  employeeId String   @unique
+  name       String
+  password   String
+  cafeId     Int
+  cafe       Cafe     @relation(fields: [cafeId], references: [id])
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  orders    Order[]
+}
+
+model MenuItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  isAvailable Boolean  @default(true)
+  cafeId      Int
+  cafe        Cafe     @relation(fields: [cafeId], references: [id])
+  createdAt   DateTime @default(now())
+
+  orderItems OrderItem[]
+}
+
+model Order {
+  id         Int      @id @default(autoincrement())
+  orderId    String   @unique
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  cafeId     Int
+  cafe       Cafe     @relation(fields: [cafeId], references: [id])
+  waiterId   Int?
+  waiter     Waiter?  @relation(fields: [waiterId], references: [id])
+  totalAmount Float
+  method     String
+  createdAt  DateTime @default(now())
+
+  orderItems OrderItem[]
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  order      Order    @relation(fields: [orderId], references: [id])
+  menuItemId Int
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity   Int
+  unitPrice  Float
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  type       String
+  message    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  targetType String
+  targetId   Int
+  body       String
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  actorId     Int?
+  actorRole   String
+  action      String
+  targetTable String
+  targetId    Int?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+}
