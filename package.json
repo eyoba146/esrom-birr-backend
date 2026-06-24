@@ -1,0 +1,36 @@
+{
+  "name": "esrom-birr-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Backend REST API for the ESROM BirrBalance Management System. This system manages employee meal balances, cafeteria transactions, and financial reporting between a company and its partnered cafés.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eyoba146/esrom-birr-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eyoba146/esrom-birr-backend/issues"
+  },
+  "homepage": "https://github.com/eyoba146/esrom-birr-backend#readme",
+  "dependencies": {
+    "@prisma/client": "^7.8.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "node-cron": "^4.5.0",
+    "nodemon": "^3.1.14",
+    "prisma": "^7.8.0",
+    "save-dev": "^0.0.1-security"
+  }
+}
