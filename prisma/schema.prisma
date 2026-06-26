@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -12,122 +7,255 @@ datasource db {
   provider = "postgresql"
 }
 
-model Department {
-  id         Int        @id @default(autoincrement())
-  name       String     @unique
-  createdAt  DateTime   @default(now())
-  employees  Employee[]
-}
-
-model Employee {
-  id           Int        @id @default(autoincrement())
-  employeeId   String     @unique
-  name         String
-  password     String
-  qrToken      String     @unique
-  balance      Float      @default(0)
-  departmentId Int
-  department   Department @relation(fields: [departmentId], references: [id])
-  isActive     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-
-  orders        Order[]
-  notifications Notification[]
-  comments      Comment[]
-}
-
-model Cafe {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  location  String
-  createdAt DateTime   @default(now())
-
-  menuItems  MenuItem[]
-  orders     Order[]
-  waiters    Waiter[]
-}
-
-model Waiter {
-  id         Int      @id @default(autoincrement())
-  employeeId String   @unique
-  name       String
-  password   String
-  cafeId     Int
-  cafe       Cafe     @relation(fields: [cafeId], references: [id])
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-
-  orders    Order[]
-}
-
-model MenuItem {
-  id          Int      @id @default(autoincrement())
-  name        String
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model audit_logs {
+  id          Int       @id @default(autoincrement())
+  user_id     Int?
+  action      String    @db.VarChar(100)
+  entity_type String?   @db.VarChar(100)
+  entity_id   Int?
   description String?
-  price       Float
-  imageUrl    String?
-  isAvailable Boolean  @default(true)
-  cafeId      Int
-  cafe        Cafe     @relation(fields: [cafeId], references: [id])
-  createdAt   DateTime @default(now())
-
-  orderItems OrderItem[]
+  ip_address  String?   @db.VarChar(45)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  users       users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model Order {
-  id         Int      @id @default(autoincrement())
-  orderId    String   @unique
-  employeeId Int
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  cafeId     Int
-  cafe       Cafe     @relation(fields: [cafeId], references: [id])
-  waiterId   Int?
-  waiter     Waiter?  @relation(fields: [waiterId], references: [id])
-  totalAmount Float
-  method     String
-  createdAt  DateTime @default(now())
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model balance_transactions {
+  id                  Int                  @id @default(autoincrement())
+  user_id             Int
+  allocation_id       Int?
+  amount              Decimal              @db.Decimal(10, 2)
+  transaction_type    transaction_type
+  reference_note      String?
+  created_at          DateTime?            @default(now()) @db.Timestamp(6)
+  monthly_allocations monthly_allocations? @relation(fields: [allocation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users               users                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  orderItems OrderItem[]
+  @@index([user_id], map: "idx_transactions_user")
 }
 
-model OrderItem {
-  id         Int      @id @default(autoincrement())
-  orderId    Int
-  order      Order    @relation(fields: [orderId], references: [id])
-  menuItemId Int
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
-  quantity   Int
-  unitPrice  Float
-  createdAt  DateTime @default(now())
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model cafe_staff {
+  user_id     Int       @id
+  cafe_id     Int
+  assigned_at DateTime? @default(now()) @db.Timestamp(6)
+  cafes       cafes     @relation(fields: [cafe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
-model Notification {
-  id         Int      @id @default(autoincrement())
-  employeeId Int
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  type       String
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model cafes {
+  id         Int          @id @default(autoincrement())
+  name       String       @db.VarChar(150)
+  location   String?      @db.VarChar(255)
+  is_active  Boolean?     @default(true)
+  created_at DateTime?    @default(now()) @db.Timestamp(6)
+  cafe_staff cafe_staff[]
+  feedback   feedback[]
+  menu_items menu_items[]
+  orders     orders[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model departments {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique @db.VarChar(100)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  users      users[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model employee_qr_codes {
+  id         Int       @id @default(autoincrement())
+  user_id    Int?      @unique
+  token_hash String    @unique
+  is_active  Boolean?  @default(true)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  expires_at DateTime? @db.Timestamp(6)
+  users      users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model feedback {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  cafe_id    Int?
+  rating     Int?
+  comment    String
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  cafes      cafes?    @relation(fields: [cafe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model login_history {
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  ip_address  String?   @db.VarChar(45)
+  device_info String?
+  login_at    DateTime? @default(now()) @db.Timestamp(6)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model menu_items {
+  id           Int           @id @default(autoincrement())
+  cafe_id      Int
+  name         String        @db.VarChar(150)
+  description  String?
+  price        Decimal       @db.Decimal(10, 2)
+  image_url    String?
+  is_available Boolean?      @default(true)
+  created_at   DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?     @default(now()) @db.Timestamp(6)
+  cafes        cafes         @relation(fields: [cafe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  order_items  order_items[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model monthly_allocations {
+  id                                            Int                    @id @default(autoincrement())
+  user_id                                       Int
+  allocation_month                              DateTime               @db.Date
+  amount                                        Decimal                @db.Decimal(10, 2)
+  allocated_by                                  Int?
+  created_at                                    DateTime?              @default(now()) @db.Timestamp(6)
+  balance_transactions                          balance_transactions[]
+  users_monthly_allocations_allocated_byTousers users?                 @relation("monthly_allocations_allocated_byTousers", fields: [allocated_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_monthly_allocations_user_idTousers      users                  @relation("monthly_allocations_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, allocation_month], map: "unique_user_month")
+  @@index([user_id], map: "idx_allocations_user")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model notifications {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  title      String    @db.VarChar(150)
   message    String
-  isRead     Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  is_read    Boolean?  @default(false)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([user_id], map: "idx_notifications_user")
 }
 
-model Comment {
-  id         Int      @id @default(autoincrement())
-  employeeId Int
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  targetType String
-  targetId   Int
-  body       String
-  createdAt  DateTime @default(now())
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model order_items {
+  id                  Int         @id @default(autoincrement())
+  order_id            Int
+  menu_item_id        Int?
+  item_name_snapshot  String      @db.VarChar(150)
+  unit_price_snapshot Decimal     @db.Decimal(10, 2)
+  quantity            Int
+  subtotal            Decimal     @db.Decimal(10, 2)
+  menu_items          menu_items? @relation(fields: [menu_item_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  orders              orders      @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
-model AuditLog {
-  id          Int      @id @default(autoincrement())
-  actorId     Int?
-  actorRole   String
-  action      String
-  targetTable String
-  targetId    Int?
-  metadata    Json?
-  createdAt   DateTime @default(now())
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model orders {
+  id                              Int           @id @default(autoincrement())
+  order_uuid                      String?       @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employee_id                     Int
+  cafe_id                         Int
+  waiter_id                       Int?
+  total_amount                    Decimal       @db.Decimal(10, 2)
+  status                          order_status? @default(pending)
+  order_method                    order_method
+  completed_at                    DateTime?     @db.Timestamp(6)
+  created_at                      DateTime?     @default(now()) @db.Timestamp(6)
+  order_items                     order_items[]
+  cafes                           cafes         @relation(fields: [cafe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_orders_employee_idTousers users         @relation("orders_employee_idTousers", fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_orders_waiter_idTousers   users?        @relation("orders_waiter_idTousers", fields: [waiter_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([cafe_id], map: "idx_orders_cafe")
+  @@index([created_at], map: "idx_orders_created")
+  @@index([employee_id], map: "idx_orders_employee")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model password_reset_tokens {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  otp_code   String    @db.VarChar(10)
+  expires_at DateTime  @db.Timestamp(6)
+  used_at    DateTime? @db.Timestamp(6)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model roles {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique @db.VarChar(50)
+  user_roles user_roles[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model user_roles {
+  user_id Int
+  role_id Int
+  roles   roles @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users   users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([user_id, role_id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id                                                          Int                     @id @default(autoincrement())
+  employee_external_id                                        String?                 @unique @db.VarChar(50)
+  fullname                                                    String                  @db.VarChar(150)
+  email                                                       String?                 @unique @db.VarChar(150)
+  phone_number                                                String                  @unique @db.VarChar(20)
+  password_hash                                               String
+  department_id                                               Int?
+  is_active                                                   Boolean?                @default(true)
+  created_at                                                  DateTime?               @default(now()) @db.Timestamp(6)
+  updated_at                                                  DateTime?               @default(now()) @db.Timestamp(6)
+  audit_logs                                                  audit_logs[]
+  balance_transactions                                        balance_transactions[]
+  cafe_staff                                                  cafe_staff?
+  employee_qr_codes                                           employee_qr_codes?
+  feedback                                                    feedback[]
+  login_history                                               login_history[]
+  monthly_allocations_monthly_allocations_allocated_byTousers monthly_allocations[]   @relation("monthly_allocations_allocated_byTousers")
+  monthly_allocations_monthly_allocations_user_idTousers      monthly_allocations[]   @relation("monthly_allocations_user_idTousers")
+  notifications                                               notifications[]
+  orders_orders_employee_idTousers                            orders[]                @relation("orders_employee_idTousers")
+  orders_orders_waiter_idTousers                              orders[]                @relation("orders_waiter_idTousers")
+  password_reset_tokens                                       password_reset_tokens[]
+  user_roles                                                  user_roles[]
+  departments                                                 departments?            @relation(fields: [department_id], references: [id], onUpdate: NoAction)
+}
+
+enum order_method {
+  online
+  offline_qr
+}
+
+enum order_status {
+  pending
+  confirmed
+  preparing
+  ready
+  completed
+  cancelled
+  refunded
+}
+
+enum transaction_type {
+  allocation
+  order
+  refund
+  adjustment
+  expiration
 }

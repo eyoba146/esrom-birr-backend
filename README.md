@@ -17,12 +17,12 @@ Backend REST API for the ESROM BirrBalance Management System. This system manage
 
 ## System Users
 
-| Role | Description |
-|---|---|
-| Employee | Views balance, places orders, leaves comments |
-| Waiter | Scans QR codes and processes offline orders |
-| Café Manager | Manages menus, images, and café statistics |
-| Company Manager | Manages employees, allocations, and reports |
+| Role            | Description                                   |
+| --------------- | --------------------------------------------- |
+| Employee        | Views balance, places orders, leaves comments |
+| Waiter          | Scans QR codes and processes offline orders   |
+| Café Manager    | Manages menus, images, and café statistics    |
+| Company Manager | Manages employees, allocations, and reports   |
 
 ## Core Features
 
@@ -89,17 +89,17 @@ npx prisma migrate dev
 
 ## Branching Strategy
 
-| Branch | Purpose |
-|---|---|
-| `main` | Production-ready code only |
-| `dev` | Integration branch — all PRs merge here |
-| `feat/name/feature` | Individual feature branches |
+| Branch              | Purpose                                 |
+| ------------------- | --------------------------------------- |
+| `main`              | Production-ready code only              |
+| `dev`               | Integration branch — all PRs merge here |
+| `feat/name/feature` | Individual feature branches             |
 
 Never push directly to `main` or `dev`. Open a Pull Request.
 
 ## Team
 
-- Eyob — Auth, QR flow, waiter portal, reports, employee portal, balance expiry
+- Eyob — Auth, QR flow, waiter portal, reports, employee portal
 - Selam — Schema setup, balance expiry, café manager portal, company manager portal, notifications
 
 ## Status
