@@ -7,6 +7,7 @@ import {
   getOrders,
   getNotifications,
   markNotificationRead,
+  generateQR,
 } from "../controllers/employee.controller.js";
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.get("/balance", getBalance);
 router.get("/orders", getOrders);
 router.get("/notifications", getNotifications);
 router.patch("/notifications/:id/read", markNotificationRead);
+router.post("/generate-qr", generateQR);
 
 export default router;
