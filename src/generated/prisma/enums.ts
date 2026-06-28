@@ -39,3 +39,23 @@ export const transaction_type = {
 } as const
 
 export type transaction_type = (typeof transaction_type)[keyof typeof transaction_type]
+
+
+export const notification_type = {
+  low_balance: 'low_balance',
+  allocation: 'allocation',
+  order_confirmed: 'order_confirmed',
+  password_reset: 'password_reset'
+} as const
+
+export type notification_type = (typeof notification_type)[keyof typeof notification_type]
+
+
+export const role_name = {
+  employee: 'employee',
+  waiter: 'waiter',
+  cafe_manager: 'cafe_manager',
+  company_manager: 'company_manager'
+} as const
+
+export type role_name = (typeof role_name)[keyof typeof role_name]

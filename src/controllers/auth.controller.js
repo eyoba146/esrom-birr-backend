@@ -1,5 +1,6 @@
 import prisma from "../config/db.js";
 import { comparePassword, generateToken } from "../services/auth.service.js";
+import { writeAuditLog } from "../services/audit.service.js";
 import { successResponse, errorResponse } from "../utils/response.js";
 
 export const login = async (req, res) => {
@@ -43,6 +44,28 @@ export const login = async (req, res) => {
       id: user.id,
       employee_external_id: user.employee_external_id,
       roles,
+    });
+
+    await prisma.$transaction(async (tx) => {
+      await tx.login_history.create({
+        data: {
+          user_id: user.id,
+          ip_address: req.ip,
+          device_info: req.headers["user-agent"],
+        },
+      });
+
+      await writeAuditLog(
+        {
+          userId: user.id,
+          action: "auth.login",
+          entityType: "users",
+          entityId: user.id,
+          description: "User logged in",
+          ipAddress: req.ip,
+        },
+        tx,
+      );
     });
 
     return successResponse(

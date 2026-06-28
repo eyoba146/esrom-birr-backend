@@ -1829,7 +1829,8 @@ export const Monthly_allocationsScalarFieldEnum = {
   allocation_month: 'allocation_month',
   amount: 'amount',
   allocated_by: 'allocated_by',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 } as const
 
 export type Monthly_allocationsScalarFieldEnum = (typeof Monthly_allocationsScalarFieldEnum)[keyof typeof Monthly_allocationsScalarFieldEnum]
@@ -1840,6 +1841,7 @@ export const NotificationsScalarFieldEnum = {
   user_id: 'user_id',
   title: 'title',
   message: 'message',
+  type: 'type',
   is_read: 'is_read',
   created_at: 'created_at'
 } as const
@@ -2028,6 +2030,20 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'notification_type'
+ */
+export type Enumnotification_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'notification_type'>
+    
+
+
+/**
+ * Reference to a field of type 'notification_type[]'
+ */
+export type ListEnumnotification_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'notification_type[]'>
+    
+
+
+/**
  * Reference to a field of type 'order_status'
  */
 export type Enumorder_statusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'order_status'>
@@ -2052,6 +2068,20 @@ export type Enumorder_methodFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
  * Reference to a field of type 'order_method[]'
  */
 export type ListEnumorder_methodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'order_method[]'>
+    
+
+
+/**
+ * Reference to a field of type 'role_name'
+ */
+export type Enumrole_nameFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'role_name'>
+    
+
+
+/**
+ * Reference to a field of type 'role_name[]'
+ */
+export type ListEnumrole_nameFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'role_name[]'>
     
 
 

@@ -198,7 +198,8 @@ export const Monthly_allocationsScalarFieldEnum = {
   allocation_month: 'allocation_month',
   amount: 'amount',
   allocated_by: 'allocated_by',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 } as const
 
 export type Monthly_allocationsScalarFieldEnum = (typeof Monthly_allocationsScalarFieldEnum)[keyof typeof Monthly_allocationsScalarFieldEnum]
@@ -209,6 +210,7 @@ export const NotificationsScalarFieldEnum = {
   user_id: 'user_id',
   title: 'title',
   message: 'message',
+  type: 'type',
   is_read: 'is_read',
   created_at: 'created_at'
 } as const

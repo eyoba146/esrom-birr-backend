@@ -5,7 +5,8 @@ import PDFDocument from "pdfkit";
 import { stringify } from "csv-stringify/sync";
 import prisma from "../config/db.js";
 import { AppError } from "../utils/AppError.js";
-import { UPLOAD_MENU_DIR } from "../middleware/upload.middleware.js";
+import { assertValidUploadedImage, UPLOAD_MENU_DIR } from "../middleware/upload.middleware.js";
+import { writeAuditLog } from "./audit.service.js";
 
 const COUNTABLE_ORDER_STATUSES = ["confirmed", "preparing", "ready", "completed"];
 
@@ -125,7 +126,7 @@ const deleteImageFile = (imageUrl) => {
   }
 };
 
-export const getMenuItems = async (user) => {
+export const getMenuItems = async (user, ipAddress = null) => {
   const cafeId = resolveCafeId(user);
 
   const items = await prisma.menu_items.findMany({
@@ -133,11 +134,20 @@ export const getMenuItems = async (user) => {
     orderBy: [{ is_available: "desc" }, { name: "asc" }],
   });
 
+  await writeAuditLog({
+    userId: user.id,
+    action: "cafe.menu.list",
+    entityType: "menu_items",
+    description: `Listed menu items for cafe ${cafeId}`,
+    ipAddress,
+  });
+
   return items.map(formatMenuItem);
 };
 
-export const createMenuItem = async (user, payload, imageFile) => {
+export const createMenuItem = async (user, payload, imageFile, ipAddress) => {
   const cafeId = resolveCafeId(user);
+  assertValidUploadedImage(imageFile);
 
   const cafe = await prisma.cafes.findFirst({
     where: { id: cafeId, is_active: true },
@@ -149,40 +159,89 @@ export const createMenuItem = async (user, payload, imageFile) => {
 
   const imageUrl = imageFile ? `/uploads/menu/${imageFile.filename}` : null;
 
-  const item = await prisma.menu_items.create({
-    data: {
-      cafe_id: cafeId,
-      name: payload.name,
-      description: payload.description,
-      price: payload.price,
-      is_available: payload.is_available,
-      image_url: imageUrl,
-    },
-  });
+  let item;
+  try {
+    item = await prisma.$transaction(async (tx) => {
+      const created = await tx.menu_items.create({
+        data: {
+          cafe_id: cafeId,
+          name: payload.name,
+          description: payload.description,
+          price: payload.price,
+          is_available: payload.is_available,
+          image_url: imageUrl,
+        },
+      });
+
+      await writeAuditLog(
+        {
+          userId: user.id,
+          action: "cafe.menu.create",
+          entityType: "menu_items",
+          entityId: created.id,
+          description: `Created menu item ${created.name}`,
+          ipAddress,
+        },
+        tx,
+      );
+
+      return created;
+    });
+  } catch (error) {
+    deleteImageFile(imageUrl);
+    throw error;
+  }
 
   return formatMenuItem(item);
 };
 
-export const updateMenuItem = async (user, menuItemId, payload, imageFile) => {
+export const updateMenuItem = async (user, menuItemId, payload, imageFile, ipAddress) => {
   const cafeId = resolveCafeId(user);
   const existing = await getMenuItemForCafe(menuItemId, cafeId);
+  assertValidUploadedImage(imageFile);
 
   const updateData = { ...payload, updated_at: new Date() };
+  const oldImageUrl = existing.image_url;
 
   if (imageFile) {
-    deleteImageFile(existing.image_url);
     updateData.image_url = `/uploads/menu/${imageFile.filename}`;
   }
 
-  const item = await prisma.menu_items.update({
-    where: { id: menuItemId },
-    data: updateData,
-  });
+  let item;
+  try {
+    item = await prisma.$transaction(async (tx) => {
+      const updated = await tx.menu_items.update({
+        where: { id: menuItemId },
+        data: updateData,
+      });
+
+      await writeAuditLog(
+        {
+          userId: user.id,
+          action: "cafe.menu.update",
+          entityType: "menu_items",
+          entityId: menuItemId,
+          description: `Updated menu item ${updated.name}`,
+          ipAddress,
+        },
+        tx,
+      );
+
+      return updated;
+    });
+  } catch (error) {
+    if (imageFile) deleteImageFile(updateData.image_url);
+    throw error;
+  }
+
+  if (imageFile) {
+    deleteImageFile(oldImageUrl);
+  }
 
   return formatMenuItem(item);
 };
 
-export const deleteMenuItem = async (user, menuItemId) => {
+export const deleteMenuItem = async (user, menuItemId, ipAddress) => {
   const cafeId = resolveCafeId(user);
   const existing = await getMenuItemForCafe(menuItemId, cafeId);
 
@@ -191,9 +250,25 @@ export const deleteMenuItem = async (user, menuItemId) => {
   });
 
   if (orderCount > 0) {
-    const item = await prisma.menu_items.update({
-      where: { id: menuItemId },
-      data: { is_available: false, updated_at: new Date() },
+    const item = await prisma.$transaction(async (tx) => {
+      const updated = await tx.menu_items.update({
+        where: { id: menuItemId },
+        data: { is_available: false, updated_at: new Date() },
+      });
+
+      await writeAuditLog(
+        {
+          userId: user.id,
+          action: "cafe.menu.mark_unavailable",
+          entityType: "menu_items",
+          entityId: menuItemId,
+          description: "Marked menu item unavailable because it has existing orders",
+          ipAddress,
+        },
+        tx,
+      );
+
+      return updated;
     });
 
     return {
@@ -205,8 +280,22 @@ export const deleteMenuItem = async (user, menuItemId) => {
 
   deleteImageFile(existing.image_url);
 
-  await prisma.menu_items.delete({
-    where: { id: menuItemId },
+  await prisma.$transaction(async (tx) => {
+    await tx.menu_items.delete({
+      where: { id: menuItemId },
+    });
+
+    await writeAuditLog(
+      {
+        userId: user.id,
+        action: "cafe.menu.delete",
+        entityType: "menu_items",
+        entityId: menuItemId,
+        description: `Deleted menu item ${existing.name}`,
+        ipAddress,
+      },
+      tx,
+    );
   });
 
   return {
@@ -216,161 +305,209 @@ export const deleteMenuItem = async (user, menuItemId) => {
   };
 };
 
-export const getCafeStatistics = async (user, dateRange = null) => {
+export const setMenuItemAvailability = async (user, menuItemId, isAvailable, ipAddress) => {
+  const cafeId = resolveCafeId(user);
+  await getMenuItemForCafe(menuItemId, cafeId);
+
+  const item = await prisma.$transaction(async (tx) => {
+    const updated = await tx.menu_items.update({
+      where: { id: menuItemId },
+      data: { is_available: isAvailable, updated_at: new Date() },
+    });
+
+    await writeAuditLog(
+      {
+        userId: user.id,
+        action: isAvailable ? "cafe.menu.mark_available" : "cafe.menu.mark_unavailable",
+        entityType: "menu_items",
+        entityId: menuItemId,
+        description: `Set menu item availability to ${isAvailable}`,
+        ipAddress,
+      },
+      tx,
+    );
+
+    return updated;
+  });
+
+  return formatMenuItem(item);
+};
+
+const buildCafeOrderWhere = (dateRange) => {
+  const params = [];
+  let whereSql = "o.cafe_id = $1 AND o.status::text = ANY($2)";
+
+  params.push(null, COUNTABLE_ORDER_STATUSES);
+
+  if (dateRange) {
+    whereSql += " AND o.created_at >= $3 AND o.created_at < $4";
+    params.push(dateRange.monthStart, dateRange.monthEnd);
+  }
+
+  return { whereSql, params };
+};
+
+const runCafeAnalyticsQuery = (cafeId, dateRange, sqlFactory) => {
+  const { whereSql, params } = buildCafeOrderWhere(dateRange);
+  params[0] = cafeId;
+  return prisma.$queryRawUnsafe(sqlFactory(whereSql), ...params);
+};
+
+const toNumber = (value) => Number(value ?? 0);
+
+export const getCafeStatistics = async (user, dateRange = null, ipAddress = null) => {
   const cafeId = resolveCafeId(user);
 
-  const orderFilter = {
-    cafe_id: cafeId,
-    status: { in: COUNTABLE_ORDER_STATUSES },
-    ...(dateRange ? { created_at: { gte: dateRange.monthStart, lt: dateRange.monthEnd } } : {}),
-  };
-
-  const [totalOrders, revenueAggregate, orderItems, orders] = await Promise.all([
-    prisma.orders.count({ where: orderFilter }),
-    prisma.orders.aggregate({
-      where: orderFilter,
-      _sum: { total_amount: true },
-    }),
-    prisma.order_items.findMany({
-      where: {
-        orders: orderFilter,
-      },
-      select: {
-        menu_item_id: true,
-        item_name_snapshot: true,
-        quantity: true,
-      },
-    }),
-    prisma.orders.findMany({
-      where: orderFilter,
-      select: {
-        employee_id: true,
-        waiter_id: true,
-        total_amount: true,
-        created_at: true,
-        users_orders_employee_idTousers: {
-          select: {
-            id: true,
-            employee_external_id: true,
-            fullname: true,
-          },
-        },
-        users_orders_waiter_idTousers: {
-          select: {
-            id: true,
-            fullname: true,
-          },
-        },
-      },
-      orderBy: { created_at: "asc" },
-    }),
+  const [
+    summaryRows,
+    dailyOrders,
+    monthlyRevenue,
+    employeeUsage,
+    waiterPerformance,
+    popularMenuItems,
+    peakOrderingHours,
+  ] = await Promise.all([
+    runCafeAnalyticsQuery(
+      cafeId,
+      dateRange,
+      (whereSql) => `
+        SELECT COUNT(*)::int AS total_orders,
+               COALESCE(SUM(o.total_amount), 0)::double precision AS total_sales
+        FROM orders o
+        WHERE ${whereSql}
+      `,
+    ),
+    runCafeAnalyticsQuery(
+      cafeId,
+      dateRange,
+      (whereSql) => `
+        SELECT to_char(o.created_at::date, 'YYYY-MM-DD') AS date,
+               COUNT(*)::int AS count
+        FROM orders o
+        WHERE ${whereSql}
+        GROUP BY o.created_at::date
+        ORDER BY o.created_at::date ASC
+      `,
+    ),
+    runCafeAnalyticsQuery(
+      cafeId,
+      dateRange,
+      (whereSql) => `
+        SELECT to_char(date_trunc('month', o.created_at), 'YYYY-MM') AS month,
+               COALESCE(SUM(o.total_amount), 0)::double precision AS revenue
+        FROM orders o
+        WHERE ${whereSql}
+        GROUP BY date_trunc('month', o.created_at)
+        ORDER BY date_trunc('month', o.created_at) ASC
+      `,
+    ),
+    runCafeAnalyticsQuery(
+      cafeId,
+      dateRange,
+      (whereSql) => `
+        SELECT COALESCE(u.employee_external_id, o.employee_id::text) AS employee_id,
+               u.fullname AS employee_name,
+               COUNT(*)::int AS total_orders,
+               COALESCE(SUM(o.total_amount), 0)::double precision AS total_amount
+        FROM orders o
+        JOIN users u ON u.id = o.employee_id
+        WHERE ${whereSql}
+        GROUP BY o.employee_id, u.employee_external_id, u.fullname
+        ORDER BY total_amount DESC
+        LIMIT 100
+      `,
+    ),
+    runCafeAnalyticsQuery(
+      cafeId,
+      dateRange,
+      (whereSql) => `
+        SELECT o.waiter_id,
+               u.fullname AS waiter_name,
+               COUNT(*)::int AS total_orders,
+               COALESCE(SUM(o.total_amount), 0)::double precision AS total_sales
+        FROM orders o
+        JOIN users u ON u.id = o.waiter_id
+        WHERE ${whereSql} AND o.waiter_id IS NOT NULL
+        GROUP BY o.waiter_id, u.fullname
+        ORDER BY total_orders DESC
+        LIMIT 100
+      `,
+    ),
+    runCafeAnalyticsQuery(
+      cafeId,
+      dateRange,
+      (whereSql) => `
+        SELECT oi.item_name_snapshot AS name,
+               SUM(oi.quantity)::int AS total_quantity
+        FROM order_items oi
+        JOIN orders o ON o.id = oi.order_id
+        WHERE ${whereSql}
+        GROUP BY oi.item_name_snapshot
+        ORDER BY total_quantity DESC
+        LIMIT 20
+      `,
+    ),
+    runCafeAnalyticsQuery(
+      cafeId,
+      dateRange,
+      (whereSql) => `
+        SELECT to_char(date_trunc('hour', o.created_at), 'HH24:00') AS hour,
+               COUNT(*)::int AS count
+        FROM orders o
+        WHERE ${whereSql}
+        GROUP BY date_trunc('hour', o.created_at)
+        ORDER BY count DESC
+        LIMIT 24
+      `,
+    ),
   ]);
 
-  const itemCounts = new Map();
+  await writeAuditLog({
+    userId: user.id,
+    action: "cafe.analytics.view",
+    entityType: "orders",
+    description: `Viewed analytics for cafe ${cafeId}`,
+    ipAddress,
+  });
 
-  for (const item of orderItems) {
-    const key = item.menu_item_id ?? item.item_name_snapshot;
-    const label = item.item_name_snapshot;
-    const current = itemCounts.get(key) ?? { name: label, totalQuantity: 0 };
-    current.totalQuantity += item.quantity;
-    itemCounts.set(key, current);
-  }
-
-  let mostOrderedItem = null;
-  for (const entry of itemCounts.values()) {
-    if (!mostOrderedItem || entry.totalQuantity > mostOrderedItem.totalQuantity) {
-      mostOrderedItem = entry;
-    }
-  }
-
-  const dailyOrdersMap = new Map();
-  const monthlyRevenueMap = new Map();
-  const employeeUsageMap = new Map();
-  const waiterPerformanceMap = new Map();
-  const peakHourMap = new Map();
-
-  for (const order of orders) {
-    if (!order.created_at) continue;
-
-    const dateKey = order.created_at.toISOString().slice(0, 10);
-    const monthKey = order.created_at.toISOString().slice(0, 7);
-    const hourKey = `${String(order.created_at.getUTCHours()).padStart(2, "0")}:00`;
-    const amount = Number(order.total_amount);
-
-    dailyOrdersMap.set(dateKey, (dailyOrdersMap.get(dateKey) ?? 0) + 1);
-    monthlyRevenueMap.set(
-      monthKey,
-      (monthlyRevenueMap.get(monthKey) ?? 0) + amount,
-    );
-    peakHourMap.set(hourKey, (peakHourMap.get(hourKey) ?? 0) + 1);
-
-    const employeeKey = order.employee_id;
-    const employeeUsage = employeeUsageMap.get(employeeKey) ?? {
-      employee_id: order.users_orders_employee_idTousers?.employee_external_id ?? employeeKey,
-      employee_name: order.users_orders_employee_idTousers?.fullname ?? "Unknown",
-      total_orders: 0,
-      total_amount: 0,
-    };
-    employeeUsage.total_orders += 1;
-    employeeUsage.total_amount += amount;
-    employeeUsageMap.set(employeeKey, employeeUsage);
-
-    if (order.waiter_id) {
-      const waiterPerformance = waiterPerformanceMap.get(order.waiter_id) ?? {
-        waiter_id: order.waiter_id,
-        waiter_name: order.users_orders_waiter_idTousers?.fullname ?? "Unknown",
-        total_orders: 0,
-        total_sales: 0,
-      };
-      waiterPerformance.total_orders += 1;
-      waiterPerformance.total_sales += amount;
-      waiterPerformanceMap.set(order.waiter_id, waiterPerformance);
-    }
-  }
-
-  const dailyOrders = Array.from(dailyOrdersMap.entries())
-    .map(([date, count]) => ({ date, count }))
-    .sort((a, b) => a.date.localeCompare(b.date));
-
-  const monthlyRevenue = Array.from(monthlyRevenueMap.entries())
-    .map(([month, revenue]) => ({
-      month,
-      revenue: Number(revenue.toFixed(2)),
-    }))
-    .sort((a, b) => a.month.localeCompare(b.month));
-
-  const peakOrderingHours = Array.from(peakHourMap.entries())
-    .map(([hour, count]) => ({ hour, count }))
-    .sort((a, b) => b.count - a.count);
-
-  const employeeUsage = Array.from(employeeUsageMap.values())
-    .map((entry) => ({
-      ...entry,
-      total_amount: Number(entry.total_amount.toFixed(2)),
-    }))
-    .sort((a, b) => b.total_amount - a.total_amount);
-
-  const waiterPerformance = Array.from(waiterPerformanceMap.values())
-    .map((entry) => ({
-      ...entry,
-      total_sales: Number(entry.total_sales.toFixed(2)),
-    }))
-    .sort((a, b) => b.total_orders - a.total_orders);
+  const summary = summaryRows[0] ?? { total_orders: 0, total_sales: 0 };
+  const normalizedPopularItems = popularMenuItems.map((entry) => ({
+    name: entry.name,
+    total_quantity: toNumber(entry.total_quantity),
+  }));
 
   return {
-    total_orders: totalOrders,
-    total_sales: Number(revenueAggregate._sum.total_amount ?? 0),
+    total_orders: toNumber(summary.total_orders),
+    total_sales: toNumber(summary.total_sales),
     transaction_volume: dailyOrders,
-    most_ordered_item: mostOrderedItem
+    most_ordered_item: normalizedPopularItems[0]
       ? {
-          name: mostOrderedItem.name,
-          total_quantity: mostOrderedItem.totalQuantity,
+          name: normalizedPopularItems[0].name,
+          total_quantity: normalizedPopularItems[0].total_quantity,
         }
       : null,
+    popular_menu_items: normalizedPopularItems,
+    food_consumption_trends: normalizedPopularItems.map((entry) => ({
+      food_name: entry.name,
+      quantity: entry.total_quantity,
+    })),
     daily_orders: dailyOrders,
-    monthly_revenue: monthlyRevenue,
-    employee_usage: employeeUsage,
-    waiter_performance: waiterPerformance,
+    monthly_revenue: monthlyRevenue.map((entry) => ({
+      month: entry.month,
+      revenue: toNumber(entry.revenue),
+    })),
+    employee_usage: employeeUsage.map((entry) => ({
+      employee_id: entry.employee_id,
+      employee_name: entry.employee_name,
+      total_orders: toNumber(entry.total_orders),
+      total_amount: toNumber(entry.total_amount),
+    })),
+    waiter_performance: waiterPerformance.map((entry) => ({
+      waiter_id: entry.waiter_id,
+      waiter_name: entry.waiter_name,
+      total_orders: toNumber(entry.total_orders),
+      total_sales: toNumber(entry.total_sales),
+    })),
     peak_ordering_hours: peakOrderingHours,
   };
 };
@@ -434,12 +571,20 @@ const buildOperationalReportRows = (stats) => {
   return rows;
 };
 
-export const getOperationalReport = async (user, params) => {
+export const getOperationalReport = async (user, params, ipAddress = null) => {
   const cafeId = resolveCafeId(user);
   const { monthStart, monthEnd, monthString } = parseMonth(params.month);
-  const stats = await getCafeStatistics({ ...user, cafeId }, { monthStart, monthEnd });
+  const stats = await getCafeStatistics({ ...user, cafeId }, { monthStart, monthEnd }, ipAddress);
 
   const rows = buildOperationalReportRows(stats);
+
+  await writeAuditLog({
+    userId: user.id,
+    action: "cafe.report.operational",
+    entityType: "orders",
+    description: `Generated ${params.format} operational report for cafe ${cafeId} and ${monthString}`,
+    ipAddress,
+  });
 
   if (params.format === "csv") {
     return {

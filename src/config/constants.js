@@ -7,13 +7,14 @@ export const ROLES = {
 
 export const ORDER_METHODS = {
   ONLINE: "online",
-  OFFLINE: "offline",
+  OFFLINE_QR: "offline_qr",
 };
 
 export const NOTIFICATION_TYPES = {
-  LOW_BALANCE: "LOW_BALANCE",
-  NEW_ALLOCATION: "NEW_ALLOCATION",
-  ORDER_CONFIRMED: "ORDER_CONFIRMED",
+  LOW_BALANCE: "low_balance",
+  ALLOCATION: "allocation",
+  ORDER_CONFIRMED: "order_confirmed",
+  PASSWORD_RESET: "password_reset",
 };
 
-export const LOW_BALANCE_THRESHOLD = 50;
+export const LOW_BALANCE_THRESHOLD_PERCENT = 20;

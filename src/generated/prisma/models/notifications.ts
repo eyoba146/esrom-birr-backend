@@ -41,6 +41,7 @@ export type NotificationsMinAggregateOutputType = {
   user_id: number | null
   title: string | null
   message: string | null
+  type: $Enums.notification_type | null
   is_read: boolean | null
   created_at: Date | null
 }
@@ -50,6 +51,7 @@ export type NotificationsMaxAggregateOutputType = {
   user_id: number | null
   title: string | null
   message: string | null
+  type: $Enums.notification_type | null
   is_read: boolean | null
   created_at: Date | null
 }
@@ -59,6 +61,7 @@ export type NotificationsCountAggregateOutputType = {
   user_id: number
   title: number
   message: number
+  type: number
   is_read: number
   created_at: number
   _all: number
@@ -80,6 +83,7 @@ export type NotificationsMinAggregateInputType = {
   user_id?: true
   title?: true
   message?: true
+  type?: true
   is_read?: true
   created_at?: true
 }
@@ -89,6 +93,7 @@ export type NotificationsMaxAggregateInputType = {
   user_id?: true
   title?: true
   message?: true
+  type?: true
   is_read?: true
   created_at?: true
 }
@@ -98,6 +103,7 @@ export type NotificationsCountAggregateInputType = {
   user_id?: true
   title?: true
   message?: true
+  type?: true
   is_read?: true
   created_at?: true
   _all?: true
@@ -194,6 +200,7 @@ export type NotificationsGroupByOutputType = {
   user_id: number
   title: string
   message: string
+  type: $Enums.notification_type
   is_read: boolean | null
   created_at: Date | null
   _count: NotificationsCountAggregateOutputType | null
@@ -226,6 +233,7 @@ export type notificationsWhereInput = {
   user_id?: Prisma.IntFilter<"notifications"> | number
   title?: Prisma.StringFilter<"notifications"> | string
   message?: Prisma.StringFilter<"notifications"> | string
+  type?: Prisma.Enumnotification_typeFilter<"notifications"> | $Enums.notification_type
   is_read?: Prisma.BoolNullableFilter<"notifications"> | boolean | null
   created_at?: Prisma.DateTimeNullableFilter<"notifications"> | Date | string | null
   users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
@@ -236,6 +244,7 @@ export type notificationsOrderByWithRelationInput = {
   user_id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   is_read?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   users?: Prisma.usersOrderByWithRelationInput
@@ -249,6 +258,7 @@ export type notificationsWhereUniqueInput = Prisma.AtLeast<{
   user_id?: Prisma.IntFilter<"notifications"> | number
   title?: Prisma.StringFilter<"notifications"> | string
   message?: Prisma.StringFilter<"notifications"> | string
+  type?: Prisma.Enumnotification_typeFilter<"notifications"> | $Enums.notification_type
   is_read?: Prisma.BoolNullableFilter<"notifications"> | boolean | null
   created_at?: Prisma.DateTimeNullableFilter<"notifications"> | Date | string | null
   users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
@@ -259,6 +269,7 @@ export type notificationsOrderByWithAggregationInput = {
   user_id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   is_read?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.notificationsCountOrderByAggregateInput
@@ -276,6 +287,7 @@ export type notificationsScalarWhereWithAggregatesInput = {
   user_id?: Prisma.IntWithAggregatesFilter<"notifications"> | number
   title?: Prisma.StringWithAggregatesFilter<"notifications"> | string
   message?: Prisma.StringWithAggregatesFilter<"notifications"> | string
+  type?: Prisma.Enumnotification_typeWithAggregatesFilter<"notifications"> | $Enums.notification_type
   is_read?: Prisma.BoolNullableWithAggregatesFilter<"notifications"> | boolean | null
   created_at?: Prisma.DateTimeNullableWithAggregatesFilter<"notifications"> | Date | string | null
 }
@@ -283,6 +295,7 @@ export type notificationsScalarWhereWithAggregatesInput = {
 export type notificationsCreateInput = {
   title: string
   message: string
+  type: $Enums.notification_type
   is_read?: boolean | null
   created_at?: Date | string | null
   users: Prisma.usersCreateNestedOneWithoutNotificationsInput
@@ -293,6 +306,7 @@ export type notificationsUncheckedCreateInput = {
   user_id: number
   title: string
   message: string
+  type: $Enums.notification_type
   is_read?: boolean | null
   created_at?: Date | string | null
 }
@@ -300,6 +314,7 @@ export type notificationsUncheckedCreateInput = {
 export type notificationsUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.Enumnotification_typeFieldUpdateOperationsInput | $Enums.notification_type
   is_read?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   users?: Prisma.usersUpdateOneRequiredWithoutNotificationsNestedInput
@@ -310,6 +325,7 @@ export type notificationsUncheckedUpdateInput = {
   user_id?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.Enumnotification_typeFieldUpdateOperationsInput | $Enums.notification_type
   is_read?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -319,6 +335,7 @@ export type notificationsCreateManyInput = {
   user_id: number
   title: string
   message: string
+  type: $Enums.notification_type
   is_read?: boolean | null
   created_at?: Date | string | null
 }
@@ -326,6 +343,7 @@ export type notificationsCreateManyInput = {
 export type notificationsUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.Enumnotification_typeFieldUpdateOperationsInput | $Enums.notification_type
   is_read?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -335,6 +353,7 @@ export type notificationsUncheckedUpdateManyInput = {
   user_id?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.Enumnotification_typeFieldUpdateOperationsInput | $Enums.notification_type
   is_read?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -344,6 +363,7 @@ export type notificationsCountOrderByAggregateInput = {
   user_id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   is_read?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
@@ -358,6 +378,7 @@ export type notificationsMaxOrderByAggregateInput = {
   user_id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   is_read?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
@@ -367,6 +388,7 @@ export type notificationsMinOrderByAggregateInput = {
   user_id?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   is_read?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
@@ -384,6 +406,10 @@ export type NotificationsListRelationFilter = {
 
 export type notificationsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type Enumnotification_typeFieldUpdateOperationsInput = {
+  set?: $Enums.notification_type
 }
 
 export type notificationsCreateNestedManyWithoutUsersInput = {
@@ -431,6 +457,7 @@ export type notificationsUncheckedUpdateManyWithoutUsersNestedInput = {
 export type notificationsCreateWithoutUsersInput = {
   title: string
   message: string
+  type: $Enums.notification_type
   is_read?: boolean | null
   created_at?: Date | string | null
 }
@@ -439,6 +466,7 @@ export type notificationsUncheckedCreateWithoutUsersInput = {
   id?: number
   title: string
   message: string
+  type: $Enums.notification_type
   is_read?: boolean | null
   created_at?: Date | string | null
 }
@@ -477,6 +505,7 @@ export type notificationsScalarWhereInput = {
   user_id?: Prisma.IntFilter<"notifications"> | number
   title?: Prisma.StringFilter<"notifications"> | string
   message?: Prisma.StringFilter<"notifications"> | string
+  type?: Prisma.Enumnotification_typeFilter<"notifications"> | $Enums.notification_type
   is_read?: Prisma.BoolNullableFilter<"notifications"> | boolean | null
   created_at?: Prisma.DateTimeNullableFilter<"notifications"> | Date | string | null
 }
@@ -485,6 +514,7 @@ export type notificationsCreateManyUsersInput = {
   id?: number
   title: string
   message: string
+  type: $Enums.notification_type
   is_read?: boolean | null
   created_at?: Date | string | null
 }
@@ -492,6 +522,7 @@ export type notificationsCreateManyUsersInput = {
 export type notificationsUpdateWithoutUsersInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.Enumnotification_typeFieldUpdateOperationsInput | $Enums.notification_type
   is_read?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -500,6 +531,7 @@ export type notificationsUncheckedUpdateWithoutUsersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.Enumnotification_typeFieldUpdateOperationsInput | $Enums.notification_type
   is_read?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -508,6 +540,7 @@ export type notificationsUncheckedUpdateManyWithoutUsersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.Enumnotification_typeFieldUpdateOperationsInput | $Enums.notification_type
   is_read?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -519,6 +552,7 @@ export type notificationsSelect<ExtArgs extends runtime.Types.Extensions.Interna
   user_id?: boolean
   title?: boolean
   message?: boolean
+  type?: boolean
   is_read?: boolean
   created_at?: boolean
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
@@ -529,6 +563,7 @@ export type notificationsSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   user_id?: boolean
   title?: boolean
   message?: boolean
+  type?: boolean
   is_read?: boolean
   created_at?: boolean
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
@@ -539,6 +574,7 @@ export type notificationsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   user_id?: boolean
   title?: boolean
   message?: boolean
+  type?: boolean
   is_read?: boolean
   created_at?: boolean
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
@@ -549,11 +585,12 @@ export type notificationsSelectScalar = {
   user_id?: boolean
   title?: boolean
   message?: boolean
+  type?: boolean
   is_read?: boolean
   created_at?: boolean
 }
 
-export type notificationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "user_id" | "title" | "message" | "is_read" | "created_at", ExtArgs["result"]["notifications"]>
+export type notificationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "user_id" | "title" | "message" | "type" | "is_read" | "created_at", ExtArgs["result"]["notifications"]>
 export type notificationsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }
@@ -574,6 +611,7 @@ export type $notificationsPayload<ExtArgs extends runtime.Types.Extensions.Inter
     user_id: number
     title: string
     message: string
+    type: $Enums.notification_type
     is_read: boolean | null
     created_at: Date | null
   }, ExtArgs["result"]["notifications"]>
@@ -1004,6 +1042,7 @@ export interface notificationsFieldRefs {
   readonly user_id: Prisma.FieldRef<"notifications", 'Int'>
   readonly title: Prisma.FieldRef<"notifications", 'String'>
   readonly message: Prisma.FieldRef<"notifications", 'String'>
+  readonly type: Prisma.FieldRef<"notifications", 'notification_type'>
   readonly is_read: Prisma.FieldRef<"notifications", 'Boolean'>
   readonly created_at: Prisma.FieldRef<"notifications", 'DateTime'>
 }
