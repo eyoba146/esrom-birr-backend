@@ -18,6 +18,10 @@ model audit_logs {
   ip_address  String?   @db.VarChar(45)
   created_at  DateTime? @default(now()) @db.Timestamp(6)
   users       users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([user_id, created_at], map: "idx_audit_logs_user_created_at")
+  @@index([entity_type, entity_id], map: "idx_audit_logs_entity")
+  @@index([created_at], map: "idx_audit_logs_created")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -33,6 +37,8 @@ model balance_transactions {
   users               users                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([user_id], map: "idx_transactions_user")
+  @@index([user_id, created_at], map: "idx_balance_transactions_user_created_at")
+  @@index([allocation_id], map: "idx_transactions_allocation")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -42,6 +48,8 @@ model cafe_staff {
   assigned_at DateTime? @default(now()) @db.Timestamp(6)
   cafes       cafes     @relation(fields: [cafe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([cafe_id], map: "idx_cafe_staff_cafe")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -87,6 +95,9 @@ model feedback {
   created_at DateTime? @default(now()) @db.Timestamp(6)
   cafes      cafes?    @relation(fields: [cafe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([cafe_id, created_at], map: "idx_feedback_cafe_created_at")
+  @@index([user_id, created_at], map: "idx_feedback_user_created_at")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -113,6 +124,9 @@ model menu_items {
   updated_at   DateTime?     @default(now()) @db.Timestamp(6)
   cafes        cafes         @relation(fields: [cafe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   order_items  order_items[]
+
+  @@unique([cafe_id, name], map: "unique_menu_item_name_per_cafe")
+  @@index([cafe_id, is_available], map: "idx_menu_items_cafe_available")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -124,12 +138,15 @@ model monthly_allocations {
   amount                                        Decimal                @db.Decimal(10, 2)
   allocated_by                                  Int?
   created_at                                    DateTime?              @default(now()) @db.Timestamp(6)
+  updated_at                                    DateTime?              @default(now()) @db.Timestamp(6)
   balance_transactions                          balance_transactions[]
   users_monthly_allocations_allocated_byTousers users?                 @relation("monthly_allocations_allocated_byTousers", fields: [allocated_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users_monthly_allocations_user_idTousers      users                  @relation("monthly_allocations_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([user_id, allocation_month], map: "unique_user_month")
   @@index([user_id], map: "idx_allocations_user")
+  @@index([allocation_month], map: "idx_allocations_month")
+  @@index([allocated_by, created_at], map: "idx_allocations_allocated_by_created_at")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -138,11 +155,14 @@ model notifications {
   user_id    Int
   title      String    @db.VarChar(150)
   message    String
+  type       notification_type
   is_read    Boolean?  @default(false)
   created_at DateTime? @default(now()) @db.Timestamp(6)
-  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([user_id], map: "idx_notifications_user")
+  @@index([user_id, is_read], map: "idx_notifications_user_read")
+  @@index([user_id, is_read, created_at], map: "idx_notifications_user_read_created_at")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -157,6 +177,10 @@ model order_items {
   subtotal            Decimal     @db.Decimal(10, 2)
   menu_items          menu_items? @relation(fields: [menu_item_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   orders              orders      @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([order_id], map: "idx_order_items_order")
+  @@index([menu_item_id], map: "idx_order_items_menu_item")
+  @@index([order_id, menu_item_id], map: "idx_order_items_order_menu_item")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -177,8 +201,13 @@ model orders {
   users_orders_waiter_idTousers   users?        @relation("orders_waiter_idTousers", fields: [waiter_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([cafe_id], map: "idx_orders_cafe")
+  @@index([cafe_id, status, created_at], map: "idx_orders_cafe_status_created_at")
   @@index([created_at], map: "idx_orders_created")
+  @@index([created_at, status], map: "idx_orders_created_at_status")
   @@index([employee_id], map: "idx_orders_employee")
+  @@index([employee_id, status, created_at], map: "idx_orders_employee_status_created_at")
+  @@index([status], map: "idx_orders_status")
+  @@index([waiter_id, created_at], map: "idx_orders_waiter_created_at")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -195,7 +224,7 @@ model password_reset_tokens {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model roles {
   id         Int          @id @default(autoincrement())
-  name       String       @unique @db.VarChar(50)
+  name       role_name    @unique
   user_roles user_roles[]
 }
 
@@ -207,6 +236,7 @@ model user_roles {
   users   users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([user_id, role_id])
+  @@index([role_id], map: "idx_user_roles_role")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -235,6 +265,9 @@ model users {
   password_reset_tokens                                       password_reset_tokens[]
   user_roles                                                  user_roles[]
   departments                                                 departments?            @relation(fields: [department_id], references: [id], onUpdate: NoAction)
+
+  @@index([department_id], map: "idx_users_department")
+  @@index([is_active], map: "idx_users_active")
 }
 
 enum order_method {
@@ -258,4 +291,18 @@ enum transaction_type {
   refund
   adjustment
   expiration
+}
+
+enum notification_type {
+  low_balance
+  allocation
+  order_confirmed
+  password_reset
+}
+
+enum role_name {
+  employee
+  waiter
+  cafe_manager
+  company_manager
 }
