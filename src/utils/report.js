@@ -1,9 +1,9 @@
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
-import { stringify } from "csv-stringify/sync";
+import { stringify as stringifyStream } from "csv-stringify";
 
 export const buildCsv = (rows, fields) => {
-  return stringify(rows, {
+  return stringifyStream(rows, {
     header: true,
     columns: fields.map((field) => ({ key: field.key, header: field.header })),
   });
@@ -67,4 +67,16 @@ export const formatReportResponse = (report) => {
     contentType: "application/pdf",
     disposition: `attachment; filename="${report.fileName}"`,
   };
+};
+
+export const sendReportResponse = (res, report) => {
+  const headers = formatReportResponse(report);
+  res.setHeader("Content-Type", headers.contentType);
+  res.setHeader("Content-Disposition", headers.disposition);
+
+  if (typeof report.data?.pipe === "function") {
+    return report.data.pipe(res);
+  }
+
+  return res.send(report.data);
 };

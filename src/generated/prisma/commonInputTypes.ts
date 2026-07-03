@@ -175,6 +175,13 @@ export type DecimalFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDecimalFilter<$PrismaModel> | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type Enumtransaction_directionFilter<$PrismaModel = never> = {
+  equals?: $Enums.transaction_direction | Prisma.Enumtransaction_directionFieldRefInput<$PrismaModel>
+  in?: $Enums.transaction_direction[] | Prisma.ListEnumtransaction_directionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.transaction_direction[] | Prisma.ListEnumtransaction_directionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumtransaction_directionFilter<$PrismaModel> | $Enums.transaction_direction
+}
+
 export type Enumtransaction_typeFilter<$PrismaModel = never> = {
   equals?: $Enums.transaction_type | Prisma.Enumtransaction_typeFieldRefInput<$PrismaModel>
   in?: $Enums.transaction_type[] | Prisma.ListEnumtransaction_typeFieldRefInput<$PrismaModel>
@@ -196,6 +203,16 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
+}
+
+export type Enumtransaction_directionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.transaction_direction | Prisma.Enumtransaction_directionFieldRefInput<$PrismaModel>
+  in?: $Enums.transaction_direction[] | Prisma.ListEnumtransaction_directionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.transaction_direction[] | Prisma.ListEnumtransaction_directionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumtransaction_directionWithAggregatesFilter<$PrismaModel> | $Enums.transaction_direction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumtransaction_directionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumtransaction_directionFilter<$PrismaModel>
 }
 
 export type Enumtransaction_typeWithAggregatesFilter<$PrismaModel = never> = {
@@ -515,6 +532,13 @@ export type NestedDecimalFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDecimalFilter<$PrismaModel> | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type NestedEnumtransaction_directionFilter<$PrismaModel = never> = {
+  equals?: $Enums.transaction_direction | Prisma.Enumtransaction_directionFieldRefInput<$PrismaModel>
+  in?: $Enums.transaction_direction[] | Prisma.ListEnumtransaction_directionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.transaction_direction[] | Prisma.ListEnumtransaction_directionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumtransaction_directionFilter<$PrismaModel> | $Enums.transaction_direction
+}
+
 export type NestedEnumtransaction_typeFilter<$PrismaModel = never> = {
   equals?: $Enums.transaction_type | Prisma.Enumtransaction_typeFieldRefInput<$PrismaModel>
   in?: $Enums.transaction_type[] | Prisma.ListEnumtransaction_typeFieldRefInput<$PrismaModel>
@@ -536,6 +560,16 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
+}
+
+export type NestedEnumtransaction_directionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.transaction_direction | Prisma.Enumtransaction_directionFieldRefInput<$PrismaModel>
+  in?: $Enums.transaction_direction[] | Prisma.ListEnumtransaction_directionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.transaction_direction[] | Prisma.ListEnumtransaction_directionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumtransaction_directionWithAggregatesFilter<$PrismaModel> | $Enums.transaction_direction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumtransaction_directionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumtransaction_directionFilter<$PrismaModel>
 }
 
 export type NestedEnumtransaction_typeWithAggregatesFilter<$PrismaModel = never> = {

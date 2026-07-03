@@ -41,10 +41,21 @@ export const transaction_type = {
 export type transaction_type = (typeof transaction_type)[keyof typeof transaction_type]
 
 
+export const transaction_direction = {
+  credit: 'credit',
+  debit: 'debit'
+} as const
+
+export type transaction_direction = (typeof transaction_direction)[keyof typeof transaction_direction]
+
+
 export const notification_type = {
   low_balance: 'low_balance',
   allocation: 'allocation',
   order_confirmed: 'order_confirmed',
+  order_status: 'order_status',
+  refund: 'refund',
+  feedback: 'feedback',
   password_reset: 'password_reset'
 } as const
 

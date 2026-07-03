@@ -220,6 +220,7 @@ export type cafesWhereInput = {
   feedback?: Prisma.FeedbackListRelationFilter
   menu_items?: Prisma.Menu_itemsListRelationFilter
   orders?: Prisma.OrdersListRelationFilter
+  qr_sessions?: Prisma.Qr_sessionsListRelationFilter
 }
 
 export type cafesOrderByWithRelationInput = {
@@ -232,6 +233,7 @@ export type cafesOrderByWithRelationInput = {
   feedback?: Prisma.feedbackOrderByRelationAggregateInput
   menu_items?: Prisma.menu_itemsOrderByRelationAggregateInput
   orders?: Prisma.ordersOrderByRelationAggregateInput
+  qr_sessions?: Prisma.qr_sessionsOrderByRelationAggregateInput
 }
 
 export type cafesWhereUniqueInput = Prisma.AtLeast<{
@@ -247,6 +249,7 @@ export type cafesWhereUniqueInput = Prisma.AtLeast<{
   feedback?: Prisma.FeedbackListRelationFilter
   menu_items?: Prisma.Menu_itemsListRelationFilter
   orders?: Prisma.OrdersListRelationFilter
+  qr_sessions?: Prisma.Qr_sessionsListRelationFilter
 }, "id">
 
 export type cafesOrderByWithAggregationInput = {
@@ -282,6 +285,7 @@ export type cafesCreateInput = {
   feedback?: Prisma.feedbackCreateNestedManyWithoutCafesInput
   menu_items?: Prisma.menu_itemsCreateNestedManyWithoutCafesInput
   orders?: Prisma.ordersCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsCreateNestedManyWithoutCafesInput
 }
 
 export type cafesUncheckedCreateInput = {
@@ -294,6 +298,7 @@ export type cafesUncheckedCreateInput = {
   feedback?: Prisma.feedbackUncheckedCreateNestedManyWithoutCafesInput
   menu_items?: Prisma.menu_itemsUncheckedCreateNestedManyWithoutCafesInput
   orders?: Prisma.ordersUncheckedCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedCreateNestedManyWithoutCafesInput
 }
 
 export type cafesUpdateInput = {
@@ -305,6 +310,7 @@ export type cafesUpdateInput = {
   feedback?: Prisma.feedbackUpdateManyWithoutCafesNestedInput
   menu_items?: Prisma.menu_itemsUpdateManyWithoutCafesNestedInput
   orders?: Prisma.ordersUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUpdateManyWithoutCafesNestedInput
 }
 
 export type cafesUncheckedUpdateInput = {
@@ -317,6 +323,7 @@ export type cafesUncheckedUpdateInput = {
   feedback?: Prisma.feedbackUncheckedUpdateManyWithoutCafesNestedInput
   menu_items?: Prisma.menu_itemsUncheckedUpdateManyWithoutCafesNestedInput
   orders?: Prisma.ordersUncheckedUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedUpdateManyWithoutCafesNestedInput
 }
 
 export type cafesCreateManyInput = {
@@ -432,6 +439,20 @@ export type cafesUpdateOneRequiredWithoutMenu_itemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.cafesUpdateToOneWithWhereWithoutMenu_itemsInput, Prisma.cafesUpdateWithoutMenu_itemsInput>, Prisma.cafesUncheckedUpdateWithoutMenu_itemsInput>
 }
 
+export type cafesCreateNestedOneWithoutQr_sessionsInput = {
+  create?: Prisma.XOR<Prisma.cafesCreateWithoutQr_sessionsInput, Prisma.cafesUncheckedCreateWithoutQr_sessionsInput>
+  connectOrCreate?: Prisma.cafesCreateOrConnectWithoutQr_sessionsInput
+  connect?: Prisma.cafesWhereUniqueInput
+}
+
+export type cafesUpdateOneRequiredWithoutQr_sessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.cafesCreateWithoutQr_sessionsInput, Prisma.cafesUncheckedCreateWithoutQr_sessionsInput>
+  connectOrCreate?: Prisma.cafesCreateOrConnectWithoutQr_sessionsInput
+  upsert?: Prisma.cafesUpsertWithoutQr_sessionsInput
+  connect?: Prisma.cafesWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.cafesUpdateToOneWithWhereWithoutQr_sessionsInput, Prisma.cafesUpdateWithoutQr_sessionsInput>, Prisma.cafesUncheckedUpdateWithoutQr_sessionsInput>
+}
+
 export type cafesCreateNestedOneWithoutOrdersInput = {
   create?: Prisma.XOR<Prisma.cafesCreateWithoutOrdersInput, Prisma.cafesUncheckedCreateWithoutOrdersInput>
   connectOrCreate?: Prisma.cafesCreateOrConnectWithoutOrdersInput
@@ -454,6 +475,7 @@ export type cafesCreateWithoutCafe_staffInput = {
   feedback?: Prisma.feedbackCreateNestedManyWithoutCafesInput
   menu_items?: Prisma.menu_itemsCreateNestedManyWithoutCafesInput
   orders?: Prisma.ordersCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsCreateNestedManyWithoutCafesInput
 }
 
 export type cafesUncheckedCreateWithoutCafe_staffInput = {
@@ -465,6 +487,7 @@ export type cafesUncheckedCreateWithoutCafe_staffInput = {
   feedback?: Prisma.feedbackUncheckedCreateNestedManyWithoutCafesInput
   menu_items?: Prisma.menu_itemsUncheckedCreateNestedManyWithoutCafesInput
   orders?: Prisma.ordersUncheckedCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedCreateNestedManyWithoutCafesInput
 }
 
 export type cafesCreateOrConnectWithoutCafe_staffInput = {
@@ -491,6 +514,7 @@ export type cafesUpdateWithoutCafe_staffInput = {
   feedback?: Prisma.feedbackUpdateManyWithoutCafesNestedInput
   menu_items?: Prisma.menu_itemsUpdateManyWithoutCafesNestedInput
   orders?: Prisma.ordersUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUpdateManyWithoutCafesNestedInput
 }
 
 export type cafesUncheckedUpdateWithoutCafe_staffInput = {
@@ -502,6 +526,7 @@ export type cafesUncheckedUpdateWithoutCafe_staffInput = {
   feedback?: Prisma.feedbackUncheckedUpdateManyWithoutCafesNestedInput
   menu_items?: Prisma.menu_itemsUncheckedUpdateManyWithoutCafesNestedInput
   orders?: Prisma.ordersUncheckedUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedUpdateManyWithoutCafesNestedInput
 }
 
 export type cafesCreateWithoutFeedbackInput = {
@@ -512,6 +537,7 @@ export type cafesCreateWithoutFeedbackInput = {
   cafe_staff?: Prisma.cafe_staffCreateNestedManyWithoutCafesInput
   menu_items?: Prisma.menu_itemsCreateNestedManyWithoutCafesInput
   orders?: Prisma.ordersCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsCreateNestedManyWithoutCafesInput
 }
 
 export type cafesUncheckedCreateWithoutFeedbackInput = {
@@ -523,6 +549,7 @@ export type cafesUncheckedCreateWithoutFeedbackInput = {
   cafe_staff?: Prisma.cafe_staffUncheckedCreateNestedManyWithoutCafesInput
   menu_items?: Prisma.menu_itemsUncheckedCreateNestedManyWithoutCafesInput
   orders?: Prisma.ordersUncheckedCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedCreateNestedManyWithoutCafesInput
 }
 
 export type cafesCreateOrConnectWithoutFeedbackInput = {
@@ -549,6 +576,7 @@ export type cafesUpdateWithoutFeedbackInput = {
   cafe_staff?: Prisma.cafe_staffUpdateManyWithoutCafesNestedInput
   menu_items?: Prisma.menu_itemsUpdateManyWithoutCafesNestedInput
   orders?: Prisma.ordersUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUpdateManyWithoutCafesNestedInput
 }
 
 export type cafesUncheckedUpdateWithoutFeedbackInput = {
@@ -560,6 +588,7 @@ export type cafesUncheckedUpdateWithoutFeedbackInput = {
   cafe_staff?: Prisma.cafe_staffUncheckedUpdateManyWithoutCafesNestedInput
   menu_items?: Prisma.menu_itemsUncheckedUpdateManyWithoutCafesNestedInput
   orders?: Prisma.ordersUncheckedUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedUpdateManyWithoutCafesNestedInput
 }
 
 export type cafesCreateWithoutMenu_itemsInput = {
@@ -570,6 +599,7 @@ export type cafesCreateWithoutMenu_itemsInput = {
   cafe_staff?: Prisma.cafe_staffCreateNestedManyWithoutCafesInput
   feedback?: Prisma.feedbackCreateNestedManyWithoutCafesInput
   orders?: Prisma.ordersCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsCreateNestedManyWithoutCafesInput
 }
 
 export type cafesUncheckedCreateWithoutMenu_itemsInput = {
@@ -581,6 +611,7 @@ export type cafesUncheckedCreateWithoutMenu_itemsInput = {
   cafe_staff?: Prisma.cafe_staffUncheckedCreateNestedManyWithoutCafesInput
   feedback?: Prisma.feedbackUncheckedCreateNestedManyWithoutCafesInput
   orders?: Prisma.ordersUncheckedCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedCreateNestedManyWithoutCafesInput
 }
 
 export type cafesCreateOrConnectWithoutMenu_itemsInput = {
@@ -607,6 +638,7 @@ export type cafesUpdateWithoutMenu_itemsInput = {
   cafe_staff?: Prisma.cafe_staffUpdateManyWithoutCafesNestedInput
   feedback?: Prisma.feedbackUpdateManyWithoutCafesNestedInput
   orders?: Prisma.ordersUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUpdateManyWithoutCafesNestedInput
 }
 
 export type cafesUncheckedUpdateWithoutMenu_itemsInput = {
@@ -618,6 +650,69 @@ export type cafesUncheckedUpdateWithoutMenu_itemsInput = {
   cafe_staff?: Prisma.cafe_staffUncheckedUpdateManyWithoutCafesNestedInput
   feedback?: Prisma.feedbackUncheckedUpdateManyWithoutCafesNestedInput
   orders?: Prisma.ordersUncheckedUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedUpdateManyWithoutCafesNestedInput
+}
+
+export type cafesCreateWithoutQr_sessionsInput = {
+  name: string
+  location?: string | null
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  cafe_staff?: Prisma.cafe_staffCreateNestedManyWithoutCafesInput
+  feedback?: Prisma.feedbackCreateNestedManyWithoutCafesInput
+  menu_items?: Prisma.menu_itemsCreateNestedManyWithoutCafesInput
+  orders?: Prisma.ordersCreateNestedManyWithoutCafesInput
+}
+
+export type cafesUncheckedCreateWithoutQr_sessionsInput = {
+  id?: number
+  name: string
+  location?: string | null
+  is_active?: boolean | null
+  created_at?: Date | string | null
+  cafe_staff?: Prisma.cafe_staffUncheckedCreateNestedManyWithoutCafesInput
+  feedback?: Prisma.feedbackUncheckedCreateNestedManyWithoutCafesInput
+  menu_items?: Prisma.menu_itemsUncheckedCreateNestedManyWithoutCafesInput
+  orders?: Prisma.ordersUncheckedCreateNestedManyWithoutCafesInput
+}
+
+export type cafesCreateOrConnectWithoutQr_sessionsInput = {
+  where: Prisma.cafesWhereUniqueInput
+  create: Prisma.XOR<Prisma.cafesCreateWithoutQr_sessionsInput, Prisma.cafesUncheckedCreateWithoutQr_sessionsInput>
+}
+
+export type cafesUpsertWithoutQr_sessionsInput = {
+  update: Prisma.XOR<Prisma.cafesUpdateWithoutQr_sessionsInput, Prisma.cafesUncheckedUpdateWithoutQr_sessionsInput>
+  create: Prisma.XOR<Prisma.cafesCreateWithoutQr_sessionsInput, Prisma.cafesUncheckedCreateWithoutQr_sessionsInput>
+  where?: Prisma.cafesWhereInput
+}
+
+export type cafesUpdateToOneWithWhereWithoutQr_sessionsInput = {
+  where?: Prisma.cafesWhereInput
+  data: Prisma.XOR<Prisma.cafesUpdateWithoutQr_sessionsInput, Prisma.cafesUncheckedUpdateWithoutQr_sessionsInput>
+}
+
+export type cafesUpdateWithoutQr_sessionsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cafe_staff?: Prisma.cafe_staffUpdateManyWithoutCafesNestedInput
+  feedback?: Prisma.feedbackUpdateManyWithoutCafesNestedInput
+  menu_items?: Prisma.menu_itemsUpdateManyWithoutCafesNestedInput
+  orders?: Prisma.ordersUpdateManyWithoutCafesNestedInput
+}
+
+export type cafesUncheckedUpdateWithoutQr_sessionsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_active?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cafe_staff?: Prisma.cafe_staffUncheckedUpdateManyWithoutCafesNestedInput
+  feedback?: Prisma.feedbackUncheckedUpdateManyWithoutCafesNestedInput
+  menu_items?: Prisma.menu_itemsUncheckedUpdateManyWithoutCafesNestedInput
+  orders?: Prisma.ordersUncheckedUpdateManyWithoutCafesNestedInput
 }
 
 export type cafesCreateWithoutOrdersInput = {
@@ -628,6 +723,7 @@ export type cafesCreateWithoutOrdersInput = {
   cafe_staff?: Prisma.cafe_staffCreateNestedManyWithoutCafesInput
   feedback?: Prisma.feedbackCreateNestedManyWithoutCafesInput
   menu_items?: Prisma.menu_itemsCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsCreateNestedManyWithoutCafesInput
 }
 
 export type cafesUncheckedCreateWithoutOrdersInput = {
@@ -639,6 +735,7 @@ export type cafesUncheckedCreateWithoutOrdersInput = {
   cafe_staff?: Prisma.cafe_staffUncheckedCreateNestedManyWithoutCafesInput
   feedback?: Prisma.feedbackUncheckedCreateNestedManyWithoutCafesInput
   menu_items?: Prisma.menu_itemsUncheckedCreateNestedManyWithoutCafesInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedCreateNestedManyWithoutCafesInput
 }
 
 export type cafesCreateOrConnectWithoutOrdersInput = {
@@ -665,6 +762,7 @@ export type cafesUpdateWithoutOrdersInput = {
   cafe_staff?: Prisma.cafe_staffUpdateManyWithoutCafesNestedInput
   feedback?: Prisma.feedbackUpdateManyWithoutCafesNestedInput
   menu_items?: Prisma.menu_itemsUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUpdateManyWithoutCafesNestedInput
 }
 
 export type cafesUncheckedUpdateWithoutOrdersInput = {
@@ -676,6 +774,7 @@ export type cafesUncheckedUpdateWithoutOrdersInput = {
   cafe_staff?: Prisma.cafe_staffUncheckedUpdateManyWithoutCafesNestedInput
   feedback?: Prisma.feedbackUncheckedUpdateManyWithoutCafesNestedInput
   menu_items?: Prisma.menu_itemsUncheckedUpdateManyWithoutCafesNestedInput
+  qr_sessions?: Prisma.qr_sessionsUncheckedUpdateManyWithoutCafesNestedInput
 }
 
 
@@ -688,6 +787,7 @@ export type CafesCountOutputType = {
   feedback: number
   menu_items: number
   orders: number
+  qr_sessions: number
 }
 
 export type CafesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -695,6 +795,7 @@ export type CafesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   feedback?: boolean | CafesCountOutputTypeCountFeedbackArgs
   menu_items?: boolean | CafesCountOutputTypeCountMenu_itemsArgs
   orders?: boolean | CafesCountOutputTypeCountOrdersArgs
+  qr_sessions?: boolean | CafesCountOutputTypeCountQr_sessionsArgs
 }
 
 /**
@@ -735,6 +836,13 @@ export type CafesCountOutputTypeCountOrdersArgs<ExtArgs extends runtime.Types.Ex
   where?: Prisma.ordersWhereInput
 }
 
+/**
+ * CafesCountOutputType without action
+ */
+export type CafesCountOutputTypeCountQr_sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.qr_sessionsWhereInput
+}
+
 
 export type cafesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -746,6 +854,7 @@ export type cafesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   feedback?: boolean | Prisma.cafes$feedbackArgs<ExtArgs>
   menu_items?: boolean | Prisma.cafes$menu_itemsArgs<ExtArgs>
   orders?: boolean | Prisma.cafes$ordersArgs<ExtArgs>
+  qr_sessions?: boolean | Prisma.cafes$qr_sessionsArgs<ExtArgs>
   _count?: boolean | Prisma.CafesCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cafes"]>
 
@@ -779,6 +888,7 @@ export type cafesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   feedback?: boolean | Prisma.cafes$feedbackArgs<ExtArgs>
   menu_items?: boolean | Prisma.cafes$menu_itemsArgs<ExtArgs>
   orders?: boolean | Prisma.cafes$ordersArgs<ExtArgs>
+  qr_sessions?: boolean | Prisma.cafes$qr_sessionsArgs<ExtArgs>
   _count?: boolean | Prisma.CafesCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type cafesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -791,6 +901,7 @@ export type $cafesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     feedback: Prisma.$feedbackPayload<ExtArgs>[]
     menu_items: Prisma.$menu_itemsPayload<ExtArgs>[]
     orders: Prisma.$ordersPayload<ExtArgs>[]
+    qr_sessions: Prisma.$qr_sessionsPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1196,6 +1307,7 @@ export interface Prisma__cafesClient<T, Null = never, ExtArgs extends runtime.Ty
   feedback<T extends Prisma.cafes$feedbackArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.cafes$feedbackArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$feedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menu_items<T extends Prisma.cafes$menu_itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.cafes$menu_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$menu_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   orders<T extends Prisma.cafes$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.cafes$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ordersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  qr_sessions<T extends Prisma.cafes$qr_sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.cafes$qr_sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$qr_sessionsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1716,6 +1828,30 @@ export type cafes$ordersArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   distinct?: Prisma.OrdersScalarFieldEnum | Prisma.OrdersScalarFieldEnum[]
+}
+
+/**
+ * cafes.qr_sessions
+ */
+export type cafes$qr_sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the qr_sessions
+   */
+  select?: Prisma.qr_sessionsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the qr_sessions
+   */
+  omit?: Prisma.qr_sessionsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.qr_sessionsInclude<ExtArgs> | null
+  where?: Prisma.qr_sessionsWhereInput
+  orderBy?: Prisma.qr_sessionsOrderByWithRelationInput | Prisma.qr_sessionsOrderByWithRelationInput[]
+  cursor?: Prisma.qr_sessionsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Qr_sessionsScalarFieldEnum | Prisma.Qr_sessionsScalarFieldEnum[]
 }
 
 /**

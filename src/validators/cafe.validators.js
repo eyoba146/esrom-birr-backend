@@ -2,7 +2,7 @@ import { AppError } from "../utils/AppError.js";
 import {
   optionalString,
   requireString,
-  toMoney,
+  toPositiveMoney,
   toPositiveInt,
   validateFormat,
   validateMonth,
@@ -18,7 +18,7 @@ const parseBoolean = (value, fieldName) => {
 export const validateMenuItemCreate = (body) => ({
   name: requireString(body.name, "name", 150),
   description: optionalString(body.description, "description", 1000) ?? null,
-  price: toMoney(body.price, "price"),
+  price: validateMenuPrice(body.price),
   is_available: parseBoolean(body.is_available, "is_available") ?? true,
 });
 
@@ -29,7 +29,7 @@ export const validateMenuItemUpdate = (body) => {
   if (body.description !== undefined) {
     payload.description = optionalString(body.description, "description", 1000) ?? null;
   }
-  if (body.price !== undefined) payload.price = toMoney(body.price, "price");
+  if (body.price !== undefined) payload.price = validateMenuPrice(body.price);
   if (body.is_available !== undefined) {
     payload.is_available = parseBoolean(body.is_available, "is_available");
   }
@@ -59,3 +59,11 @@ export const validateCafeReportQuery = (query) => ({
 export const validateCafeAnalyticsQuery = (query) => ({
   month: validateMonth(query.month),
 });
+
+const validateMenuPrice = (value) => {
+  const price = toPositiveMoney(value, "price");
+  if (price > 10000) {
+    throw new AppError("price exceeds the allowed maximum", 400);
+  }
+  return price;
+};

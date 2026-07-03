@@ -1,22 +1,25 @@
 import prisma from "../config/db.js";
 import { comparePassword } from "../services/auth.service.js";
-import { decryptQRToken } from "../services/qr.service.js";
+import { createQRSession, consumeQRSession, decryptQRToken, hashQRToken } from "../services/qr.service.js";
 import { getEmployeeBalance } from "../services/balance.service.js";
-import { successResponse, errorResponse } from "../utils/response.js";
-import { auditLog } from "../middleware/auditLogger.js";
+import { createOrderWithBalanceDeduction } from "../services/order.service.js";
+import { validateOfflineOrder } from "../validators/order.validators.js";
+import { successResponse } from "../utils/response.js";
+import { AppError } from "../utils/AppError.js";
+import { writeAuditLog } from "../services/audit.service.js";
 
-export const scanQR = async (req, res) => {
+export const scanQR = async (req, res, next) => {
   try {
     const { qr_token } = req.body;
 
     if (!qr_token) {
-      return errorResponse(res, "QR token is required", 400);
+      throw new AppError("QR token is required", 400);
     }
 
     const decoded = decryptQRToken(qr_token);
 
     if (!decoded) {
-      return errorResponse(res, "Invalid or expired QR code", 400);
+      throw new AppError("Invalid or expired QR code", 400);
     }
 
     const employee = await prisma.users.findUnique({
@@ -30,20 +33,50 @@ export const scanQR = async (req, res) => {
           select: { name: true },
         },
         employee_qr_codes: {
-          select: { is_active: true },
+          select: { token_hash: true, is_active: true, expires_at: true },
         },
       },
     });
 
     if (!employee || !employee.is_active) {
-      return errorResponse(res, "Employee not found or inactive", 404);
+      throw new AppError("Employee not found or inactive", 404);
     }
 
-    if (!employee.employee_qr_codes?.is_active) {
-      return errorResponse(res, "QR code is inactive", 400);
+    const storedQr = employee.employee_qr_codes;
+    if (
+      !storedQr?.is_active ||
+      storedQr.token_hash !== hashQRToken(qr_token) ||
+      (storedQr.expires_at && storedQr.expires_at <= new Date())
+    ) {
+      throw new AppError("QR code is inactive", 400);
+    }
+
+    if (!req.user.cafeId) {
+      throw new AppError("Waiter is not assigned to a cafe", 403);
     }
 
     const balance = await getEmployeeBalance(employee.id);
+    const session = await prisma.$transaction(async (tx) => {
+      const qrSession = await createQRSession({
+        employeeId: employee.id,
+        waiterId: req.user.id,
+        cafeId: req.user.cafeId,
+        tx,
+      });
+
+      await writeAuditLog(
+        {
+          userId: req.user.id,
+          action: "qr.session.create",
+          entityType: "qr_sessions",
+          description: `Created QR session for employee ${employee.id}`,
+          ipAddress: req.ip,
+        },
+        tx,
+      );
+
+      return qrSession;
+    });
 
     return successResponse(
       res,
@@ -55,33 +88,26 @@ export const scanQR = async (req, res) => {
           department: employee.departments?.name,
           balance,
         },
+        qr_session_id: session.qrSessionId,
+        session_expires_at: session.expiresAt,
       },
       "Employee verified successfully",
     );
   } catch (error) {
-    console.error("Scan QR error:", error);
-    return errorResponse(res, "Internal server error", 500);
+    next(error);
   }
 };
 
-export const createOfflineOrder = async (req, res) => {
+export const createOfflineOrder = async (req, res, next) => {
   try {
-    const { employee_id, password, items, cafe_id } = req.body;
-
-    if (!employee_id || !password || !items || !cafe_id) {
-      return errorResponse(
-        res,
-        "Employee ID, password, items and cafe ID are required",
-        400,
-      );
-    }
+    const { employee_id, password, items, cafe_id, qr_session_id } = validateOfflineOrder(req.body);
 
     const employee = await prisma.users.findUnique({
       where: { id: employee_id },
     });
 
     if (!employee || !employee.is_active) {
-      return errorResponse(res, "Employee not found or inactive", 404);
+      throw new AppError("Employee not found or inactive", 404);
     }
 
     const isPasswordValid = await comparePassword(
@@ -90,89 +116,38 @@ export const createOfflineOrder = async (req, res) => {
     );
 
     if (!isPasswordValid) {
-      return errorResponse(res, "Invalid password", 401);
+      throw new AppError("Invalid password", 401);
     }
 
-    const menuItems = await prisma.menu_items.findMany({
-      where: {
-        id: { in: items.map((i) => i.menu_item_id) },
-        cafe_id,
-        is_available: true,
-      },
-    });
-
-    if (menuItems.length !== items.length) {
-      return errorResponse(res, "One or more items are unavailable", 400);
-    }
-
-    let totalAmount = 0;
-    const orderItems = items.map((item) => {
-      const menuItem = menuItems.find((m) => m.id === item.menu_item_id);
-      const subtotal = Number(menuItem.price) * item.quantity;
-      totalAmount += subtotal;
-      return {
-        menu_item_id: menuItem.id,
-        item_name_snapshot: menuItem.name,
-        unit_price_snapshot: menuItem.price,
-        quantity: item.quantity,
-        subtotal,
-      };
-    });
-
-    const balance = await getEmployeeBalance(employee_id);
-
-    if (balance < totalAmount) {
-      return errorResponse(res, "Insufficient balance", 400);
-    }
-
-    const order = await prisma.$transaction(async (tx) => {
-      const newOrder = await tx.orders.create({
-        data: {
-          employee_id,
-          cafe_id,
-          waiter_id: req.user.id,
-          total_amount: totalAmount,
-          status: "confirmed",
-          order_method: "offline_qr",
-          order_items: {
-            create: orderItems,
-          },
-        },
-        include: { order_items: true },
-      });
-
-      await tx.balance_transactions.create({
-        data: {
-          user_id: employee_id,
-          amount: totalAmount,
-          transaction_type: "order",
-          reference_note: `Order #${newOrder.id}`,
-        },
-      });
-
-      return newOrder;
-    });
-
-    await auditLog({
-      actorId: req.user.id,
-      actorRole: "waiter",
-      action: "OFFLINE_ORDER_CREATED",
-      targetTable: "orders",
-      targetId: order.id,
-      metadata: { employee_id, total_amount: totalAmount },
+    const result = await createOrderWithBalanceDeduction({
+      employeeId: employee_id,
+      cafeId: cafe_id,
+      waiterId: req.user.id,
+      items,
+      orderMethod: "offline_qr",
+      actor: req.user,
+      ipAddress: req.ip,
+      beforeCreate: (tx) => consumeQRSession({
+        sessionId: qr_session_id,
+        employeeId: employee_id,
+        waiterId: req.user.id,
+        cafeId: cafe_id,
+        tx,
+      }),
     });
 
     return successResponse(
       res,
       {
-        order_id: order.id,
-        total_amount: totalAmount,
-        remaining_balance: balance - totalAmount,
+        order_id: result.order.id,
+        order_uuid: result.order.order_uuid,
+        total_amount: result.total_amount,
+        remaining_balance: result.remaining_balance,
       },
       "Order created successfully",
+      201,
     );
   } catch (error) {
-    console.error("Create offline order error:", error);
-    return errorResponse(res, "Internal server error", 500);
+    next(error);
   }
 };

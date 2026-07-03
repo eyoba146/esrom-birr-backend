@@ -1,145 +1,251 @@
 import prisma from "../config/db.js";
 import { getEmployeeBalance } from "../services/balance.service.js";
-import { successResponse, errorResponse } from "../utils/response.js";
-import { auditLog } from "../middleware/auditLogger.js";
-export const getProfile = async (req, res) => {
-  try {
-    const user = await prisma.users.findUnique({
-      where: { id: req.user.id },
-      select: {
-        id: true,
-        fullname: true,
-        employee_external_id: true,
-        email: true,
-        phone_number: true,
-        is_active: true,
-        created_at: true,
-        departments: {
-          select: { name: true },
-        },
+import { createOrderWithBalanceDeduction } from "../services/order.service.js";
+import { validateOnlineOrder } from "../validators/order.validators.js";
+import { successResponse } from "../utils/response.js";
+import { generateQRToken, hashQRToken } from "../services/qr.service.js";
+import { writeAuditLog } from "../services/audit.service.js";
+import {
+  getNotifications as listUserNotifications,
+  markNotificationRead as markUserNotificationRead,
+} from "../services/notification.service.js";
+import { parsePagination, parseSort } from "../validators/common.validators.js";
+import { validateFeedbackCreate } from "../validators/employee.validators.js";
+import { AppError } from "../utils/AppError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+
+export const getProfile = asyncHandler(async (req, res) => {
+  const user = await prisma.users.findUnique({
+    where: { id: req.user.id },
+    select: {
+      id: true,
+      fullname: true,
+      employee_external_id: true,
+      email: true,
+      phone_number: true,
+      is_active: true,
+      created_at: true,
+      departments: {
+        select: { name: true },
       },
-    });
+    },
+  });
 
-    return successResponse(res, user, "Profile fetched successfully");
-  } catch (error) {
-    console.error("Get profile error:", error);
-    return errorResponse(res, "Internal server error", 500);
-  }
-};
+  return successResponse(res, user, "Profile fetched successfully");
+});
 
-export const getBalance = async (req, res) => {
+export const getBalance = asyncHandler(async (req, res) => {
+  const balance = await getEmployeeBalance(req.user.id);
+  return successResponse(res, { balance }, "Balance fetched successfully");
+});
+
+export const getOrders = async (req, res, next) => {
   try {
-    const balance = await getEmployeeBalance(req.user.id);
-    return successResponse(res, { balance }, "Balance fetched successfully");
-  } catch (error) {
-    console.error("Get balance error:", error);
-    return errorResponse(res, "Internal server error", 500);
-  }
-};
-
-export const getOrders = async (req, res) => {
-  try {
-    const orders = await prisma.orders.findMany({
-      where: { employee_id: req.user.id },
-      include: {
-        order_items: {
-          include: {
-            menu_items: {
-              select: { name: true, price: true },
+    const pagination = parsePagination(req.query);
+    const orderBy = parseSort(req.query, ["created_at", "total_amount", "status"], "-created_at");
+    const where = { employee_id: req.user.id };
+    const [orders, total] = await Promise.all([
+      prisma.orders.findMany({
+        where,
+        include: {
+          order_items: {
+            include: {
+              menu_items: {
+                select: { name: true, price: true },
+              },
             },
           },
+          cafes: {
+            select: { name: true },
+          },
         },
-        cafes: {
-          select: { name: true },
-        },
-      },
-      orderBy: { created_at: "desc" },
-    });
+        orderBy,
+        skip: pagination.skip,
+        take: pagination.limit,
+      }),
+      prisma.orders.count({ where }),
+    ]);
 
-    return successResponse(res, orders, "Orders fetched successfully");
+    return successResponse(
+      res,
+      {
+        items: orders,
+        total,
+        page: pagination.page,
+        limit: pagination.limit,
+        total_pages: Math.ceil(total / pagination.limit),
+      },
+      "Orders fetched successfully",
+    );
   } catch (error) {
-    console.error("Get orders error:", error);
-    return errorResponse(res, "Internal server error", 500);
+    next(error);
   }
 };
 
-export const getNotifications = async (req, res) => {
+export const createOnlineOrder = async (req, res, next) => {
   try {
-    const notifications = await prisma.notifications.findMany({
-      where: { user_id: req.user.id },
-      orderBy: { created_at: "desc" },
+    const payload = validateOnlineOrder(req.body);
+    const result = await createOrderWithBalanceDeduction({
+      employeeId: req.user.id,
+      cafeId: payload.cafe_id,
+      items: payload.items,
+      orderMethod: "online",
+      actor: req.user,
+      ipAddress: req.ip,
     });
 
     return successResponse(
       res,
-      notifications,
+      {
+        order_id: result.order.id,
+        order_uuid: result.order.order_uuid,
+        total_amount: result.total_amount,
+        remaining_balance: result.remaining_balance,
+      },
+      "Order created successfully",
+      201,
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getNotifications = async (req, res, next) => {
+  try {
+    const pagination = parsePagination(req.query);
+    const orderBy = parseSort(req.query, ["created_at", "is_read"], "-created_at");
+    const data = await listUserNotifications(req.user, pagination, req.ip, orderBy);
+
+    return successResponse(
+      res,
+      data,
       "Notifications fetched successfully",
     );
   } catch (error) {
-    console.error("Get notifications error:", error);
-    return errorResponse(res, "Internal server error", 500);
+    next(error);
   }
 };
 
-export const markNotificationRead = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const notification = await prisma.notifications.update({
-      where: { id: parseInt(id) },
-      data: { is_read: true },
-    });
-
-    return successResponse(res, notification, "Notification marked as read");
-  } catch (error) {
-    console.error("Mark notification error:", error);
-    return errorResponse(res, "Internal server error", 500);
+export const markNotificationRead = asyncHandler(async (req, res) => {
+  const notificationId = Number.parseInt(req.params.id, 10);
+  if (!Number.isInteger(notificationId) || notificationId <= 0) {
+    throw new AppError("notification id must be a positive integer", 400);
   }
-};
 
-export const generateQR = async (req, res) => {
-  try {
-    const { generateQRToken } = await import("../services/qr.service.js");
+  const notification = await markUserNotificationRead(req.user, notificationId, req.ip);
+  return successResponse(res, notification, "Notification marked as read");
+});
 
-    const token = generateQRToken(req.user.id);
+export const generateQR = asyncHandler(async (req, res) => {
+  const { token, expiresAt } = generateQRToken(req.user.id);
+  const tokenHash = hashQRToken(token);
 
-    const existing = await prisma.employee_qr_codes.findUnique({
+  const existing = await prisma.employee_qr_codes.findUnique({
+    where: { user_id: req.user.id },
+  });
+
+  if (existing) {
+    await prisma.employee_qr_codes.update({
       where: { user_id: req.user.id },
+      data: {
+        token_hash: tokenHash,
+        is_active: true,
+        expires_at: expiresAt,
+      },
     });
+  } else {
+    await prisma.employee_qr_codes.create({
+      data: {
+        user_id: req.user.id,
+        token_hash: tokenHash,
+        is_active: true,
+        expires_at: expiresAt,
+      },
+    });
+  }
 
-    if (existing) {
-      await prisma.employee_qr_codes.update({
-        where: { user_id: req.user.id },
-        data: {
-          token_hash: token,
-          is_active: true,
-        },
-      });
-    } else {
-      await prisma.employee_qr_codes.create({
+  await writeAuditLog({
+    userId: req.user.id,
+    action: "employee.qr.generate",
+    entityType: "employee_qr_codes",
+    entityId: existing?.id ?? null,
+    description: "Generated employee QR token",
+    ipAddress: req.ip,
+  });
+
+  return successResponse(
+    res,
+    { qr_token: token, expires_at: expiresAt },
+    "QR code generated successfully",
+  );
+});
+
+export const createFeedback = async (req, res, next) => {
+  try {
+    const payload = validateFeedbackCreate(req.body);
+
+    const feedback = await prisma.$transaction(async (tx) => {
+      if (payload.cafe_id) {
+        const cafe = await tx.cafes.findFirst({
+          where: { id: payload.cafe_id, is_active: true },
+          select: { id: true },
+        });
+        if (!cafe) {
+          throw new AppError("Cafe not found or inactive", 404);
+        }
+      }
+
+      const created = await tx.feedback.create({
         data: {
           user_id: req.user.id,
-          token_hash: token,
-          is_active: true,
+          cafe_id: payload.cafe_id,
+          rating: payload.rating,
+          comment: payload.comment,
         },
       });
-    }
 
-    await auditLog({
-      actorId: req.user.id,
-      actorRole: "employee",
-      action: "QR_GENERATED",
-      targetTable: "employee_qr_codes",
-      targetId: req.user.id,
+      await writeAuditLog(
+        {
+          userId: req.user.id,
+          action: "employee.feedback.create",
+          entityType: "feedback",
+          entityId: created.id,
+          description: "Created employee feedback",
+          ipAddress: req.ip,
+        },
+        tx,
+      );
+
+      if (payload.cafe_id) {
+        const managers = await tx.cafe_staff.findMany({
+          where: {
+            cafe_id: payload.cafe_id,
+            users: {
+              user_roles: {
+                some: { roles: { name: "cafe_manager" } },
+              },
+            },
+          },
+          select: { user_id: true },
+        });
+
+        if (managers.length) {
+          await tx.notifications.createMany({
+            data: managers.map((manager) => ({
+              user_id: manager.user_id,
+              title: "New employee feedback",
+              message: "New feedback was submitted for your cafe.",
+              type: "feedback",
+            })),
+          });
+        }
+      }
+
+      return created;
     });
 
-    return successResponse(
-      res,
-      { qr_token: token },
-      "QR code generated successfully",
-    );
+    return successResponse(res, feedback, "Feedback submitted successfully", 201);
   } catch (error) {
-    console.error("Generate QR error:", error);
-    return errorResponse(res, "Internal server error", 500);
+    next(error);
   }
 };

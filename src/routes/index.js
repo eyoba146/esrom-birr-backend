@@ -3,19 +3,20 @@ import authRoutes from "./auth.routes.js";
 import employeeRoutes from "./employee.routes.js";
 import waiterRoutes from "./waiter.routes.js";
 import cafeRoutes from "./cafe.routes.js";
-import reportRoutes from "./report.routes.js";
 import companyRoutes from "./company.routes.js";
 import notificationRoutes from "./notification.routes.js";
+import orderRoutes from "./order.routes.js";
+import auditRoutes from "./audit.routes.js";
 
 const router = express.Router();
 
 router.use("/auth", authRoutes);
 router.use("/employee", employeeRoutes);
 router.use("/waiter", waiterRoutes);
+router.use("/orders", orderRoutes);
 router.use("/cafe", cafeRoutes);
-// router.use("/cafe-manager", cafeRoutes);
-router.use("/reports", reportRoutes);router.use("/company-manager", companyRoutes);
+router.use("/company-manager", companyRoutes);
 router.use("/notifications", notificationRoutes);
-
+router.use("/audit-logs", auditRoutes);
 
 export default router;

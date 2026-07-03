@@ -46,12 +46,17 @@ export const createNotification = async (
   return notification;
 };
 
-export const getNotifications = async (user, pagination, ipAddress) => {
+export const getNotifications = async (
+  user,
+  pagination,
+  ipAddress,
+  orderBy = { created_at: "desc" },
+) => {
   const where = { user_id: user.id };
   const [items, total] = await Promise.all([
     prisma.notifications.findMany({
       where,
-      orderBy: { created_at: "desc" },
+      orderBy,
       skip: pagination.skip,
       take: pagination.limit,
     }),
@@ -209,7 +214,7 @@ export const getCurrentMonthBalance = async (userId, tx = prisma) => {
     where: {
       user_id: userId,
       created_at: { gte: start, lt: end },
-      transaction_type: { in: ["order", "expiration"] },
+      direction: "debit",
     },
     _sum: { amount: true },
   });
@@ -218,7 +223,7 @@ export const getCurrentMonthBalance = async (userId, tx = prisma) => {
     where: {
       user_id: userId,
       created_at: { gte: start, lt: end },
-      transaction_type: { in: ["allocation", "refund", "adjustment"] },
+      direction: "credit",
     },
     _sum: { amount: true },
   });

@@ -1,7 +1,7 @@
 import { requireString, toPositiveInt } from "./common.validators.js";
 import { AppError } from "../utils/AppError.js";
 
-const TYPES = ["low_balance", "allocation", "order_confirmed", "password_reset"];
+const TYPES = ["low_balance", "allocation", "order_confirmed", "order_status", "refund", "feedback", "password_reset"];
 
 export const validateNotificationCreate = (body) => {
   if (!TYPES.includes(body.type)) {

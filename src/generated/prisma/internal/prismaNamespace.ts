@@ -395,9 +395,11 @@ export const ModelName = {
   menu_items: 'menu_items',
   monthly_allocations: 'monthly_allocations',
   notifications: 'notifications',
+  qr_sessions: 'qr_sessions',
   order_items: 'order_items',
   orders: 'orders',
   password_reset_tokens: 'password_reset_tokens',
+  refresh_tokens: 'refresh_tokens',
   roles: 'roles',
   user_roles: 'user_roles',
   users: 'users'
@@ -416,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "audit_logs" | "balance_transactions" | "cafe_staff" | "cafes" | "departments" | "employee_qr_codes" | "feedback" | "login_history" | "menu_items" | "monthly_allocations" | "notifications" | "order_items" | "orders" | "password_reset_tokens" | "roles" | "user_roles" | "users"
+    modelProps: "audit_logs" | "balance_transactions" | "cafe_staff" | "cafes" | "departments" | "employee_qr_codes" | "feedback" | "login_history" | "menu_items" | "monthly_allocations" | "notifications" | "qr_sessions" | "order_items" | "orders" | "password_reset_tokens" | "refresh_tokens" | "roles" | "user_roles" | "users"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1234,6 +1236,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    qr_sessions: {
+      payload: Prisma.$qr_sessionsPayload<ExtArgs>
+      fields: Prisma.qr_sessionsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.qr_sessionsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.qr_sessionsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload>
+        }
+        findFirst: {
+          args: Prisma.qr_sessionsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.qr_sessionsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload>
+        }
+        findMany: {
+          args: Prisma.qr_sessionsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload>[]
+        }
+        create: {
+          args: Prisma.qr_sessionsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload>
+        }
+        createMany: {
+          args: Prisma.qr_sessionsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.qr_sessionsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload>[]
+        }
+        delete: {
+          args: Prisma.qr_sessionsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload>
+        }
+        update: {
+          args: Prisma.qr_sessionsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload>
+        }
+        deleteMany: {
+          args: Prisma.qr_sessionsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.qr_sessionsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.qr_sessionsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload>[]
+        }
+        upsert: {
+          args: Prisma.qr_sessionsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$qr_sessionsPayload>
+        }
+        aggregate: {
+          args: Prisma.Qr_sessionsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateQr_sessions>
+        }
+        groupBy: {
+          args: Prisma.qr_sessionsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Qr_sessionsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.qr_sessionsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Qr_sessionsCountAggregateOutputType> | number
+        }
+      }
+    }
     order_items: {
       payload: Prisma.$order_itemsPayload<ExtArgs>
       fields: Prisma.order_itemsFieldRefs
@@ -1453,6 +1529,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.password_reset_tokensCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.Password_reset_tokensCountAggregateOutputType> | number
+        }
+      }
+    }
+    refresh_tokens: {
+      payload: Prisma.$refresh_tokensPayload<ExtArgs>
+      fields: Prisma.refresh_tokensFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.refresh_tokensFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.refresh_tokensFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+        }
+        findFirst: {
+          args: Prisma.refresh_tokensFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.refresh_tokensFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+        }
+        findMany: {
+          args: Prisma.refresh_tokensFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload>[]
+        }
+        create: {
+          args: Prisma.refresh_tokensCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+        }
+        createMany: {
+          args: Prisma.refresh_tokensCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.refresh_tokensCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload>[]
+        }
+        delete: {
+          args: Prisma.refresh_tokensDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+        }
+        update: {
+          args: Prisma.refresh_tokensUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+        }
+        deleteMany: {
+          args: Prisma.refresh_tokensDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.refresh_tokensUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.refresh_tokensUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload>[]
+        }
+        upsert: {
+          args: Prisma.refresh_tokensUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+        }
+        aggregate: {
+          args: Prisma.Refresh_tokensAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRefresh_tokens>
+        }
+        groupBy: {
+          args: Prisma.refresh_tokensGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Refresh_tokensGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.refresh_tokensCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Refresh_tokensCountAggregateOutputType> | number
         }
       }
     }
@@ -1736,6 +1886,7 @@ export const Balance_transactionsScalarFieldEnum = {
   user_id: 'user_id',
   allocation_id: 'allocation_id',
   amount: 'amount',
+  direction: 'direction',
   transaction_type: 'transaction_type',
   reference_note: 'reference_note',
   created_at: 'created_at'
@@ -1849,6 +2000,20 @@ export const NotificationsScalarFieldEnum = {
 export type NotificationsScalarFieldEnum = (typeof NotificationsScalarFieldEnum)[keyof typeof NotificationsScalarFieldEnum]
 
 
+export const Qr_sessionsScalarFieldEnum = {
+  id: 'id',
+  session_hash: 'session_hash',
+  employee_id: 'employee_id',
+  waiter_id: 'waiter_id',
+  cafe_id: 'cafe_id',
+  expires_at: 'expires_at',
+  used_at: 'used_at',
+  created_at: 'created_at'
+} as const
+
+export type Qr_sessionsScalarFieldEnum = (typeof Qr_sessionsScalarFieldEnum)[keyof typeof Qr_sessionsScalarFieldEnum]
+
+
 export const Order_itemsScalarFieldEnum = {
   id: 'id',
   order_id: 'order_id',
@@ -1888,6 +2053,17 @@ export const Password_reset_tokensScalarFieldEnum = {
 } as const
 
 export type Password_reset_tokensScalarFieldEnum = (typeof Password_reset_tokensScalarFieldEnum)[keyof typeof Password_reset_tokensScalarFieldEnum]
+
+
+export const Refresh_tokensScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  token_hash: 'token_hash',
+  expires_at: 'expires_at',
+  created_at: 'created_at'
+} as const
+
+export type Refresh_tokensScalarFieldEnum = (typeof Refresh_tokensScalarFieldEnum)[keyof typeof Refresh_tokensScalarFieldEnum]
 
 
 export const RolesScalarFieldEnum = {
@@ -2005,6 +2181,20 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
+ * Reference to a field of type 'transaction_direction'
+ */
+export type Enumtransaction_directionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'transaction_direction'>
+    
+
+
+/**
+ * Reference to a field of type 'transaction_direction[]'
+ */
+export type ListEnumtransaction_directionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'transaction_direction[]'>
     
 
 
@@ -2219,9 +2409,11 @@ export type GlobalOmitConfig = {
   menu_items?: Prisma.menu_itemsOmit
   monthly_allocations?: Prisma.monthly_allocationsOmit
   notifications?: Prisma.notificationsOmit
+  qr_sessions?: Prisma.qr_sessionsOmit
   order_items?: Prisma.order_itemsOmit
   orders?: Prisma.ordersOmit
   password_reset_tokens?: Prisma.password_reset_tokensOmit
+  refresh_tokens?: Prisma.refresh_tokensOmit
   roles?: Prisma.rolesOmit
   user_roles?: Prisma.user_rolesOmit
   users?: Prisma.usersOmit

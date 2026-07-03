@@ -1,7 +1,7 @@
 import { successResponse } from "../utils/response.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { parsePagination } from "../validators/common.validators.js";
-import { formatReportResponse } from "../utils/report.js";
+import { sendReportResponse } from "../utils/report.js";
 import {
   assignMonthlyBalance,
   createDepartment,
@@ -115,10 +115,7 @@ export const monthlyReport = asyncHandler(async (req, res) => {
     return successResponse(res, report.data, "Monthly report generated successfully");
   }
 
-  const headers = formatReportResponse(report);
-  res.setHeader("Content-Type", headers.contentType);
-  res.setHeader("Content-Disposition", headers.disposition);
-  return res.send(report.data);
+  return sendReportResponse(res, report);
 });
 
 export const financialReport = asyncHandler(async (req, res) => {
@@ -128,10 +125,7 @@ export const financialReport = asyncHandler(async (req, res) => {
     return successResponse(res, report.data, "Financial report generated successfully");
   }
 
-  const headers = formatReportResponse(report);
-  res.setHeader("Content-Type", headers.contentType);
-  res.setHeader("Content-Disposition", headers.disposition);
-  return res.send(report.data);
+  return sendReportResponse(res, report);
 });
 
 export const feedback = asyncHandler(async (req, res) => {

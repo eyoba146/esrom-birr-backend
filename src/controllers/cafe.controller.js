@@ -1,6 +1,6 @@
 import { successResponse } from "../utils/response.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { formatReportResponse } from "../utils/report.js";
+import { sendReportResponse } from "../utils/report.js";
 import {
   createMenuItem,
   deleteMenuItem,
@@ -69,8 +69,5 @@ export const cafeOperationalReport = asyncHandler(async (req, res) => {
     return successResponse(res, report.data, "Cafe operational report generated successfully");
   }
 
-  const headers = formatReportResponse(report);
-  res.setHeader("Content-Type", headers.contentType);
-  res.setHeader("Content-Disposition", headers.disposition);
-  return res.send(report.data);
+  return sendReportResponse(res, report);
 });

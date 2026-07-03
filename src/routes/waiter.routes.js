@@ -1,6 +1,6 @@
 import express from "express";
-import { authenticate } from "../middleware/auth.js";
-import { requireRole } from "../middleware/requireRole.js";
+import { authenticate, requireRole } from "../middleware/auth.middleware.js";
+import { ROLES } from "../config/constants.js";
 import {
   scanQR,
   createOfflineOrder,
@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 router.use(authenticate);
-router.use(requireRole("waiter"));
+router.use(requireRole(ROLES.WAITER));
 
 router.post("/scan", scanQR);
 router.post("/order", createOfflineOrder);

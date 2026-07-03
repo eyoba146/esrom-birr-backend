@@ -27,7 +27,7 @@ const expirePreviousMonthBalances = async () => {
     const credits = await prisma.balance_transactions.aggregate({
       where: {
         allocation_id: allocation.id,
-        transaction_type: { in: ["allocation", "refund", "adjustment"] },
+        direction: "credit",
       },
       _sum: { amount: true },
     });
@@ -36,7 +36,7 @@ const expirePreviousMonthBalances = async () => {
       where: {
         user_id: allocation.user_id,
         created_at: { gte: monthStart, lt: monthEnd },
-        transaction_type: { in: ["order", "expiration"] },
+        direction: "debit",
       },
       _sum: { amount: true },
     });
@@ -49,6 +49,7 @@ const expirePreviousMonthBalances = async () => {
         user_id: allocation.user_id,
         allocation_id: allocation.id,
         amount: remaining,
+        direction: "debit",
         transaction_type: "expiration",
         reference_note: "Unused monthly meal balance expired",
       },

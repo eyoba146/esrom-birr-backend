@@ -370,6 +370,7 @@ export const assignMonthlyBalance = async (actor, payload, ipAddress) => {
         user_id: payload.user_id,
         allocation_id: allocation.id,
         amount: payload.amount,
+        direction: "credit",
         transaction_type: "allocation",
         reference_note: `Monthly meal balance allocation for ${month}`,
       },
@@ -402,7 +403,8 @@ export const updateMonthlyAllocation = async (actor, allocationId, payload, ipAd
       where: {
         user_id: existing.user_id,
         created_at: { gte: existing.allocation_month, lt: monthEnd },
-        transaction_type: "order",
+        direction: "debit",
+        transaction_type: { in: ["order", "expiration"] },
       },
       _sum: { amount: true },
     });
@@ -423,7 +425,8 @@ export const updateMonthlyAllocation = async (actor, allocationId, payload, ipAd
         data: {
           user_id: existing.user_id,
           allocation_id: allocationId,
-          amount: difference,
+          amount: Math.abs(difference),
+          direction: difference > 0 ? "credit" : "debit",
           transaction_type: "adjustment",
           reference_note: difference > 0 ? "Monthly allocation increase" : "Monthly allocation decrease",
         },
@@ -486,8 +489,8 @@ const buildMonthlyReportRows = async (monthRange) => {
         SELECT bt.user_id,
                COALESCE(SUM(
                  CASE
-                   WHEN bt.transaction_type::text IN ('allocation', 'refund', 'adjustment') THEN bt.amount
-                   WHEN bt.transaction_type::text IN ('order', 'expiration') THEN -bt.amount
+                   WHEN bt.direction::text = 'credit' THEN bt.amount
+                   WHEN bt.direction::text = 'debit' THEN -bt.amount
                    ELSE 0
                  END
                ), 0)::double precision AS remaining_balance

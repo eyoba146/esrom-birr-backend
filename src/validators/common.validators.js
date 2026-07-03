@@ -98,6 +98,18 @@ export const parsePagination = (query) => {
   };
 };
 
+export const parseSort = (query, allowedFields, defaultSort = "-created_at") => {
+  const rawSort = optionalString(query.sort, "sort", 50) ?? defaultSort;
+  const direction = rawSort.startsWith("-") ? "desc" : "asc";
+  const field = rawSort.replace(/^-/, "");
+
+  if (!allowedFields.includes(field)) {
+    throw new AppError(`sort must be one of ${allowedFields.join(", ")}`, 400);
+  }
+
+  return { [field]: direction };
+};
+
 export const validateFormat = (format) => {
   const value = format || "json";
   const allowed = ["json", "csv", "xlsx", "pdf"];

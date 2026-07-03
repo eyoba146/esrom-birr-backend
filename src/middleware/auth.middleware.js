@@ -12,7 +12,12 @@ export const authenticate = async (req, res, next) => {
       throw new AppError("Authentication token is required", 401);
     }
 
-    const payload = jwt.verify(token, env.JWT_SECRET);
+    let payload;
+    try {
+      payload = jwt.verify(token, env.JWT_SECRET);
+    } catch (error) {
+      return next(new AppError("Invalid or expired token", 401));
+    }
 
     const user = await prisma.users.findUnique({
       where: { id: payload.id },
@@ -39,7 +44,7 @@ export const authenticate = async (req, res, next) => {
 
     next();
   } catch (error) {
-    next(error.name === "JsonWebTokenError" ? new AppError("Invalid token", 401) : error);
+    next(error);
   }
 };
 

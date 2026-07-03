@@ -14,6 +14,9 @@ export const NOTIFICATION_TYPES = {
   LOW_BALANCE: "low_balance",
   ALLOCATION: "allocation",
   ORDER_CONFIRMED: "order_confirmed",
+  ORDER_STATUS: "order_status",
+  REFUND: "refund",
+  FEEDBACK: "feedback",
   PASSWORD_RESET: "password_reset",
 };
 

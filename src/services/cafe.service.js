@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
-import { stringify } from "csv-stringify/sync";
+import { stringify } from "csv-stringify";
 import prisma from "../config/db.js";
 import { AppError } from "../utils/AppError.js";
 import { assertValidUploadedImage, UPLOAD_MENU_DIR } from "../middleware/upload.middleware.js";

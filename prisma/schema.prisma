@@ -30,6 +30,7 @@ model balance_transactions {
   user_id             Int
   allocation_id       Int?
   amount              Decimal              @db.Decimal(10, 2)
+  direction           transaction_direction @default(credit)
   transaction_type    transaction_type
   reference_note      String?
   created_at          DateTime?            @default(now()) @db.Timestamp(6)
@@ -38,6 +39,7 @@ model balance_transactions {
 
   @@index([user_id], map: "idx_transactions_user")
   @@index([user_id, created_at], map: "idx_balance_transactions_user_created_at")
+  @@index([user_id, direction, created_at], map: "idx_balance_transactions_user_direction_created_at")
   @@index([allocation_id], map: "idx_transactions_allocation")
 }
 
@@ -63,6 +65,7 @@ model cafes {
   feedback   feedback[]
   menu_items menu_items[]
   orders     orders[]
+  qr_sessions qr_sessions[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -165,6 +168,24 @@ model notifications {
   @@index([user_id, is_read, created_at], map: "idx_notifications_user_read_created_at")
 }
 
+model qr_sessions {
+  id             Int       @id @default(autoincrement())
+  session_hash   String    @unique @db.VarChar(64)
+  employee_id    Int
+  waiter_id      Int
+  cafe_id        Int
+  expires_at     DateTime  @db.Timestamp(6)
+  used_at        DateTime? @db.Timestamp(6)
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  cafes          cafes     @relation(fields: [cafe_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  employee       users     @relation("qr_sessions_employee_idTousers", fields: [employee_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  waiter         users     @relation("qr_sessions_waiter_idTousers", fields: [waiter_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([employee_id, expires_at], map: "idx_qr_sessions_employee_expires")
+  @@index([waiter_id, expires_at], map: "idx_qr_sessions_waiter_expires")
+  @@index([used_at, expires_at], map: "idx_qr_sessions_used_expires")
+}
+
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model order_items {
@@ -214,11 +235,26 @@ model orders {
 model password_reset_tokens {
   id         Int       @id @default(autoincrement())
   user_id    Int
-  otp_code   String    @db.VarChar(10)
+  otp_code   String    @db.VarChar(255)
   expires_at DateTime  @db.Timestamp(6)
   used_at    DateTime? @db.Timestamp(6)
   created_at DateTime? @default(now()) @db.Timestamp(6)
   users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([user_id], map: "idx_password_reset_tokens_user")
+  @@index([expires_at], map: "idx_password_reset_tokens_expires")
+}
+
+model refresh_tokens {
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  token_hash  String    @db.VarChar(64) @unique
+  expires_at  DateTime  @db.Timestamp(6)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id], map: "idx_refresh_tokens_user")
+  @@index([expires_at], map: "idx_refresh_tokens_expires")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -263,6 +299,9 @@ model users {
   orders_orders_employee_idTousers                            orders[]                @relation("orders_employee_idTousers")
   orders_orders_waiter_idTousers                              orders[]                @relation("orders_waiter_idTousers")
   password_reset_tokens                                       password_reset_tokens[]
+  refresh_tokens                                              refresh_tokens[]
+  qr_sessions_qr_sessions_employee_idTousers                  qr_sessions[]          @relation("qr_sessions_employee_idTousers")
+  qr_sessions_qr_sessions_waiter_idTousers                    qr_sessions[]          @relation("qr_sessions_waiter_idTousers")
   user_roles                                                  user_roles[]
   departments                                                 departments?            @relation(fields: [department_id], references: [id], onUpdate: NoAction)
 
@@ -293,10 +332,18 @@ enum transaction_type {
   expiration
 }
 
+enum transaction_direction {
+  credit
+  debit
+}
+
 enum notification_type {
   low_balance
   allocation
   order_confirmed
+  order_status
+  refund
+  feedback
   password_reset
 }
 
