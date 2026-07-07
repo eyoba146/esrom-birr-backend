@@ -18,5 +18,5 @@ router.use("/cafe", cafeRoutes);
 router.use("/company-manager", companyRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/audit-logs", auditRoutes);
-
+router.use("/reports", (await import("./report.routes.js")).default);
 export default router;
