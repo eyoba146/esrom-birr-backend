@@ -7,7 +7,7 @@ Backend REST API for the ESROM BirrBalance Management System. This system manage
 - **Runtime:** Node.js
 - **Framework:** Express.js
 - **ORM:** Prisma
-- **Database:** MySQL/supabase
+- **Database:** PostgreSQL
 - **Authentication:** JWT (JSON Web Tokens)
 - **Password Hashing:** bcrypt
 - **QR Encryption:** AES (crypto)
@@ -84,8 +84,50 @@ npm run dev
 ### Run Migrations
 
 ```bash
-npx prisma migrate dev
+npm run prisma:migrate
+npm run prisma:generate
 ```
+
+### Required Environment Variables
+
+- `DATABASE_URL`: PostgreSQL connection string.
+- `JWT_SECRET`: JWT signing secret, 32+ characters in production.
+- `JWT_EXPIRES_IN`: Access token lifetime, defaults to `15m`.
+- `REFRESH_TOKEN_EXPIRES_IN`: Refresh token lifetime, defaults to `30d`.
+- `AES_SECRET`: QR encryption secret, 32+ characters in production.
+- `CORS_ORIGIN`: Comma-separated allowed origins.
+- `PORT`: HTTP port, defaults to `5000`.
+
+## Production API Notes
+
+- Health checks: `GET /health`, `GET /health/ready`.
+- Order lifecycle: `PATCH /api/orders/:id/status`, `PATCH /api/orders/:id/cancel`, `POST /api/orders/:id/refund`.
+- Offline QR ordering now requires `qr_session_id` from `POST /api/waiter/scan`; sessions expire after 3 minutes and are one-time use.
+- Employee feedback: `POST /api/employee/feedback`.
+- Audit logs: `GET /api/audit-logs` for company managers with `page`, `limit`, `action`, `user_id`, `from`, and `to`.
+- Employee orders and notifications support `page`, `limit`, and `sort`; default limit is 20 and max is 100.
+
+## Schema Migration Notes
+
+Migration `20260703120000_production_order_qr_ledger` adds:
+
+- `qr_sessions` for one-time QR replay protection.
+- `transaction_direction` enum and `balance_transactions.direction`.
+- Backfill that converts old negative adjustments to positive debit entries.
+- Additional notification types for order status, refunds, and feedback.
+
+Deploy with:
+
+```bash
+npm run prisma:migrate
+npm run prisma:generate
+npm test
+```
+
+## API Test Artifacts
+
+- Node API tests: `tests/api.test.js`.
+- Postman collection: `docs/ESROM-BirrBalance.postman_collection.json`.
 
 ## Branching Strategy
 

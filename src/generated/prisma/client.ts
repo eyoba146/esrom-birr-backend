@@ -100,6 +100,11 @@ export type monthly_allocations = Prisma.monthly_allocationsModel
  */
 export type notifications = Prisma.notificationsModel
 /**
+ * Model qr_sessions
+ * 
+ */
+export type qr_sessions = Prisma.qr_sessionsModel
+/**
  * Model order_items
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
  * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -115,6 +120,11 @@ export type orders = Prisma.ordersModel
  * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
  */
 export type password_reset_tokens = Prisma.password_reset_tokensModel
+/**
+ * Model refresh_tokens
+ * 
+ */
+export type refresh_tokens = Prisma.refresh_tokensModel
 /**
  * Model roles
  * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

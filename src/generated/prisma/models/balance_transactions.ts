@@ -45,6 +45,7 @@ export type Balance_transactionsMinAggregateOutputType = {
   user_id: number | null
   allocation_id: number | null
   amount: runtime.Decimal | null
+  direction: $Enums.transaction_direction | null
   transaction_type: $Enums.transaction_type | null
   reference_note: string | null
   created_at: Date | null
@@ -55,6 +56,7 @@ export type Balance_transactionsMaxAggregateOutputType = {
   user_id: number | null
   allocation_id: number | null
   amount: runtime.Decimal | null
+  direction: $Enums.transaction_direction | null
   transaction_type: $Enums.transaction_type | null
   reference_note: string | null
   created_at: Date | null
@@ -65,6 +67,7 @@ export type Balance_transactionsCountAggregateOutputType = {
   user_id: number
   allocation_id: number
   amount: number
+  direction: number
   transaction_type: number
   reference_note: number
   created_at: number
@@ -91,6 +94,7 @@ export type Balance_transactionsMinAggregateInputType = {
   user_id?: true
   allocation_id?: true
   amount?: true
+  direction?: true
   transaction_type?: true
   reference_note?: true
   created_at?: true
@@ -101,6 +105,7 @@ export type Balance_transactionsMaxAggregateInputType = {
   user_id?: true
   allocation_id?: true
   amount?: true
+  direction?: true
   transaction_type?: true
   reference_note?: true
   created_at?: true
@@ -111,6 +116,7 @@ export type Balance_transactionsCountAggregateInputType = {
   user_id?: true
   allocation_id?: true
   amount?: true
+  direction?: true
   transaction_type?: true
   reference_note?: true
   created_at?: true
@@ -208,6 +214,7 @@ export type Balance_transactionsGroupByOutputType = {
   user_id: number
   allocation_id: number | null
   amount: runtime.Decimal
+  direction: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note: string | null
   created_at: Date | null
@@ -241,6 +248,7 @@ export type balance_transactionsWhereInput = {
   user_id?: Prisma.IntFilter<"balance_transactions"> | number
   allocation_id?: Prisma.IntNullableFilter<"balance_transactions"> | number | null
   amount?: Prisma.DecimalFilter<"balance_transactions"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFilter<"balance_transactions"> | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFilter<"balance_transactions"> | $Enums.transaction_type
   reference_note?: Prisma.StringNullableFilter<"balance_transactions"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"balance_transactions"> | Date | string | null
@@ -253,6 +261,7 @@ export type balance_transactionsOrderByWithRelationInput = {
   user_id?: Prisma.SortOrder
   allocation_id?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   transaction_type?: Prisma.SortOrder
   reference_note?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -268,6 +277,7 @@ export type balance_transactionsWhereUniqueInput = Prisma.AtLeast<{
   user_id?: Prisma.IntFilter<"balance_transactions"> | number
   allocation_id?: Prisma.IntNullableFilter<"balance_transactions"> | number | null
   amount?: Prisma.DecimalFilter<"balance_transactions"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFilter<"balance_transactions"> | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFilter<"balance_transactions"> | $Enums.transaction_type
   reference_note?: Prisma.StringNullableFilter<"balance_transactions"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"balance_transactions"> | Date | string | null
@@ -280,6 +290,7 @@ export type balance_transactionsOrderByWithAggregationInput = {
   user_id?: Prisma.SortOrder
   allocation_id?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   transaction_type?: Prisma.SortOrder
   reference_note?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -298,6 +309,7 @@ export type balance_transactionsScalarWhereWithAggregatesInput = {
   user_id?: Prisma.IntWithAggregatesFilter<"balance_transactions"> | number
   allocation_id?: Prisma.IntNullableWithAggregatesFilter<"balance_transactions"> | number | null
   amount?: Prisma.DecimalWithAggregatesFilter<"balance_transactions"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionWithAggregatesFilter<"balance_transactions"> | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeWithAggregatesFilter<"balance_transactions"> | $Enums.transaction_type
   reference_note?: Prisma.StringNullableWithAggregatesFilter<"balance_transactions"> | string | null
   created_at?: Prisma.DateTimeNullableWithAggregatesFilter<"balance_transactions"> | Date | string | null
@@ -305,6 +317,7 @@ export type balance_transactionsScalarWhereWithAggregatesInput = {
 
 export type balance_transactionsCreateInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note?: string | null
   created_at?: Date | string | null
@@ -317,6 +330,7 @@ export type balance_transactionsUncheckedCreateInput = {
   user_id: number
   allocation_id?: number | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note?: string | null
   created_at?: Date | string | null
@@ -324,6 +338,7 @@ export type balance_transactionsUncheckedCreateInput = {
 
 export type balance_transactionsUpdateInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -336,6 +351,7 @@ export type balance_transactionsUncheckedUpdateInput = {
   user_id?: Prisma.IntFieldUpdateOperationsInput | number
   allocation_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -346,6 +362,7 @@ export type balance_transactionsCreateManyInput = {
   user_id: number
   allocation_id?: number | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note?: string | null
   created_at?: Date | string | null
@@ -353,6 +370,7 @@ export type balance_transactionsCreateManyInput = {
 
 export type balance_transactionsUpdateManyMutationInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -363,6 +381,7 @@ export type balance_transactionsUncheckedUpdateManyInput = {
   user_id?: Prisma.IntFieldUpdateOperationsInput | number
   allocation_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -373,6 +392,7 @@ export type balance_transactionsCountOrderByAggregateInput = {
   user_id?: Prisma.SortOrder
   allocation_id?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   transaction_type?: Prisma.SortOrder
   reference_note?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -390,6 +410,7 @@ export type balance_transactionsMaxOrderByAggregateInput = {
   user_id?: Prisma.SortOrder
   allocation_id?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   transaction_type?: Prisma.SortOrder
   reference_note?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -400,6 +421,7 @@ export type balance_transactionsMinOrderByAggregateInput = {
   user_id?: Prisma.SortOrder
   allocation_id?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
   transaction_type?: Prisma.SortOrder
   reference_note?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -428,6 +450,10 @@ export type DecimalFieldUpdateOperationsInput = {
   decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
   multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type Enumtransaction_directionFieldUpdateOperationsInput = {
+  set?: $Enums.transaction_direction
 }
 
 export type Enumtransaction_typeFieldUpdateOperationsInput = {
@@ -520,6 +546,7 @@ export type balance_transactionsUncheckedUpdateManyWithoutUsersNestedInput = {
 
 export type balance_transactionsCreateWithoutMonthly_allocationsInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note?: string | null
   created_at?: Date | string | null
@@ -530,6 +557,7 @@ export type balance_transactionsUncheckedCreateWithoutMonthly_allocationsInput =
   id?: number
   user_id: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note?: string | null
   created_at?: Date | string | null
@@ -569,6 +597,7 @@ export type balance_transactionsScalarWhereInput = {
   user_id?: Prisma.IntFilter<"balance_transactions"> | number
   allocation_id?: Prisma.IntNullableFilter<"balance_transactions"> | number | null
   amount?: Prisma.DecimalFilter<"balance_transactions"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFilter<"balance_transactions"> | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFilter<"balance_transactions"> | $Enums.transaction_type
   reference_note?: Prisma.StringNullableFilter<"balance_transactions"> | string | null
   created_at?: Prisma.DateTimeNullableFilter<"balance_transactions"> | Date | string | null
@@ -576,6 +605,7 @@ export type balance_transactionsScalarWhereInput = {
 
 export type balance_transactionsCreateWithoutUsersInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note?: string | null
   created_at?: Date | string | null
@@ -586,6 +616,7 @@ export type balance_transactionsUncheckedCreateWithoutUsersInput = {
   id?: number
   allocation_id?: number | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note?: string | null
   created_at?: Date | string | null
@@ -621,6 +652,7 @@ export type balance_transactionsCreateManyMonthly_allocationsInput = {
   id?: number
   user_id: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note?: string | null
   created_at?: Date | string | null
@@ -628,6 +660,7 @@ export type balance_transactionsCreateManyMonthly_allocationsInput = {
 
 export type balance_transactionsUpdateWithoutMonthly_allocationsInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -638,6 +671,7 @@ export type balance_transactionsUncheckedUpdateWithoutMonthly_allocationsInput =
   id?: Prisma.IntFieldUpdateOperationsInput | number
   user_id?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -647,6 +681,7 @@ export type balance_transactionsUncheckedUpdateManyWithoutMonthly_allocationsInp
   id?: Prisma.IntFieldUpdateOperationsInput | number
   user_id?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -656,6 +691,7 @@ export type balance_transactionsCreateManyUsersInput = {
   id?: number
   allocation_id?: number | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: $Enums.transaction_direction
   transaction_type: $Enums.transaction_type
   reference_note?: string | null
   created_at?: Date | string | null
@@ -663,6 +699,7 @@ export type balance_transactionsCreateManyUsersInput = {
 
 export type balance_transactionsUpdateWithoutUsersInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -673,6 +710,7 @@ export type balance_transactionsUncheckedUpdateWithoutUsersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   allocation_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -682,6 +720,7 @@ export type balance_transactionsUncheckedUpdateManyWithoutUsersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   allocation_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  direction?: Prisma.Enumtransaction_directionFieldUpdateOperationsInput | $Enums.transaction_direction
   transaction_type?: Prisma.Enumtransaction_typeFieldUpdateOperationsInput | $Enums.transaction_type
   reference_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -694,6 +733,7 @@ export type balance_transactionsSelect<ExtArgs extends runtime.Types.Extensions.
   user_id?: boolean
   allocation_id?: boolean
   amount?: boolean
+  direction?: boolean
   transaction_type?: boolean
   reference_note?: boolean
   created_at?: boolean
@@ -706,6 +746,7 @@ export type balance_transactionsSelectCreateManyAndReturn<ExtArgs extends runtim
   user_id?: boolean
   allocation_id?: boolean
   amount?: boolean
+  direction?: boolean
   transaction_type?: boolean
   reference_note?: boolean
   created_at?: boolean
@@ -718,6 +759,7 @@ export type balance_transactionsSelectUpdateManyAndReturn<ExtArgs extends runtim
   user_id?: boolean
   allocation_id?: boolean
   amount?: boolean
+  direction?: boolean
   transaction_type?: boolean
   reference_note?: boolean
   created_at?: boolean
@@ -730,12 +772,13 @@ export type balance_transactionsSelectScalar = {
   user_id?: boolean
   allocation_id?: boolean
   amount?: boolean
+  direction?: boolean
   transaction_type?: boolean
   reference_note?: boolean
   created_at?: boolean
 }
 
-export type balance_transactionsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "user_id" | "allocation_id" | "amount" | "transaction_type" | "reference_note" | "created_at", ExtArgs["result"]["balance_transactions"]>
+export type balance_transactionsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "user_id" | "allocation_id" | "amount" | "direction" | "transaction_type" | "reference_note" | "created_at", ExtArgs["result"]["balance_transactions"]>
 export type balance_transactionsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   monthly_allocations?: boolean | Prisma.balance_transactions$monthly_allocationsArgs<ExtArgs>
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
@@ -760,6 +803,7 @@ export type $balance_transactionsPayload<ExtArgs extends runtime.Types.Extension
     user_id: number
     allocation_id: number | null
     amount: runtime.Decimal
+    direction: $Enums.transaction_direction
     transaction_type: $Enums.transaction_type
     reference_note: string | null
     created_at: Date | null
@@ -1192,6 +1236,7 @@ export interface balance_transactionsFieldRefs {
   readonly user_id: Prisma.FieldRef<"balance_transactions", 'Int'>
   readonly allocation_id: Prisma.FieldRef<"balance_transactions", 'Int'>
   readonly amount: Prisma.FieldRef<"balance_transactions", 'Decimal'>
+  readonly direction: Prisma.FieldRef<"balance_transactions", 'transaction_direction'>
   readonly transaction_type: Prisma.FieldRef<"balance_transactions", 'transaction_type'>
   readonly reference_note: Prisma.FieldRef<"balance_transactions", 'String'>
   readonly created_at: Prisma.FieldRef<"balance_transactions", 'DateTime'>

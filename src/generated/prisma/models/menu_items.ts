@@ -277,6 +277,7 @@ export type menu_itemsOrderByWithRelationInput = {
 
 export type menu_itemsWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  cafe_id_name?: Prisma.menu_itemsCafe_idNameCompoundUniqueInput
   AND?: Prisma.menu_itemsWhereInput | Prisma.menu_itemsWhereInput[]
   OR?: Prisma.menu_itemsWhereInput[]
   NOT?: Prisma.menu_itemsWhereInput | Prisma.menu_itemsWhereInput[]
@@ -290,7 +291,7 @@ export type menu_itemsWhereUniqueInput = Prisma.AtLeast<{
   updated_at?: Prisma.DateTimeNullableFilter<"menu_items"> | Date | string | null
   cafes?: Prisma.XOR<Prisma.CafesScalarRelationFilter, Prisma.cafesWhereInput>
   order_items?: Prisma.Order_itemsListRelationFilter
-}, "id">
+}, "id" | "cafe_id_name">
 
 export type menu_itemsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -416,6 +417,11 @@ export type Menu_itemsListRelationFilter = {
 
 export type menu_itemsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type menu_itemsCafe_idNameCompoundUniqueInput = {
+  cafe_id: number
+  name: string
 }
 
 export type menu_itemsCountOrderByAggregateInput = {

@@ -62,9 +62,11 @@ export const ModelName = {
   menu_items: 'menu_items',
   monthly_allocations: 'monthly_allocations',
   notifications: 'notifications',
+  qr_sessions: 'qr_sessions',
   order_items: 'order_items',
   orders: 'orders',
   password_reset_tokens: 'password_reset_tokens',
+  refresh_tokens: 'refresh_tokens',
   roles: 'roles',
   user_roles: 'user_roles',
   users: 'users'
@@ -105,6 +107,7 @@ export const Balance_transactionsScalarFieldEnum = {
   user_id: 'user_id',
   allocation_id: 'allocation_id',
   amount: 'amount',
+  direction: 'direction',
   transaction_type: 'transaction_type',
   reference_note: 'reference_note',
   created_at: 'created_at'
@@ -198,7 +201,8 @@ export const Monthly_allocationsScalarFieldEnum = {
   allocation_month: 'allocation_month',
   amount: 'amount',
   allocated_by: 'allocated_by',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 } as const
 
 export type Monthly_allocationsScalarFieldEnum = (typeof Monthly_allocationsScalarFieldEnum)[keyof typeof Monthly_allocationsScalarFieldEnum]
@@ -209,11 +213,26 @@ export const NotificationsScalarFieldEnum = {
   user_id: 'user_id',
   title: 'title',
   message: 'message',
+  type: 'type',
   is_read: 'is_read',
   created_at: 'created_at'
 } as const
 
 export type NotificationsScalarFieldEnum = (typeof NotificationsScalarFieldEnum)[keyof typeof NotificationsScalarFieldEnum]
+
+
+export const Qr_sessionsScalarFieldEnum = {
+  id: 'id',
+  session_hash: 'session_hash',
+  employee_id: 'employee_id',
+  waiter_id: 'waiter_id',
+  cafe_id: 'cafe_id',
+  expires_at: 'expires_at',
+  used_at: 'used_at',
+  created_at: 'created_at'
+} as const
+
+export type Qr_sessionsScalarFieldEnum = (typeof Qr_sessionsScalarFieldEnum)[keyof typeof Qr_sessionsScalarFieldEnum]
 
 
 export const Order_itemsScalarFieldEnum = {
@@ -255,6 +274,17 @@ export const Password_reset_tokensScalarFieldEnum = {
 } as const
 
 export type Password_reset_tokensScalarFieldEnum = (typeof Password_reset_tokensScalarFieldEnum)[keyof typeof Password_reset_tokensScalarFieldEnum]
+
+
+export const Refresh_tokensScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  token_hash: 'token_hash',
+  expires_at: 'expires_at',
+  created_at: 'created_at'
+} as const
+
+export type Refresh_tokensScalarFieldEnum = (typeof Refresh_tokensScalarFieldEnum)[keyof typeof Refresh_tokensScalarFieldEnum]
 
 
 export const RolesScalarFieldEnum = {
