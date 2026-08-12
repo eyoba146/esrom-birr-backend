@@ -6,3 +6,4 @@ JWT_EXPIRES_IN=
 AES_SECRET=
 NODE_ENV=node_modules/
 node_modules/ 
+.env
